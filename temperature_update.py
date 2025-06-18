@@ -16,7 +16,7 @@ for feature in geo_data['features']:
         # Extract the filename from the old URL (e.g., "Temperature_0.csv")
         file_name = os.path.basename(old_url)
         # Redirect the Data_url to your local path (adjust if you change the folder structure)
-        feature['properties']['Data_url'] = f"data/{file_name}"
+        feature['properties']['Data_url'] = f"Temperature_data/{file_name}"
 
 # Write back the updated GeoJSON
 with open(geojson_path, 'w', encoding='utf-8') as f:
