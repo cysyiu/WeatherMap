@@ -50,7 +50,7 @@ jobs:
           )
           for i in "${!urls[@]}"; do
             echo "Fetching ${urls[$i]}"
-            curl -s -o data/latest_1min_humidity_csdi_${i}.csv "${urls[$i]}"
+            curl -s -o RH_data/latest_1min_humidity_csdi_${i}.csv "${urls[$i]}"
           done
 
       - name: Update GeoJSON to point to local CSV files
