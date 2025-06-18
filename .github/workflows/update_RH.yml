@@ -1,4 +1,4 @@
-name: Update Temperature Data
+name: Update RH Data
 
 on:
   schedule:
