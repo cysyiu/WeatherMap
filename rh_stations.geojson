@@ -12,7 +12,7 @@
 				"AutomaticWeatherStation_en" : "Chek Lap Kok",
 				"AutomaticWeatherStation_sc" : "赤鱲角",
 				"AutomaticWeatherStation_uc" : "赤鱲角",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_0.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_0.csv",
 				"gml_id" : "latest_1min_humidity.0"
 			}
 		},
@@ -26,7 +26,7 @@
 				"AutomaticWeatherStation_en" : "Cheung Chau",
 				"AutomaticWeatherStation_sc" : "长洲",
 				"AutomaticWeatherStation_uc" : "長洲",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_1.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_1.csv",
 				"gml_id" : "latest_1min_humidity.1"
 			}
 		},
@@ -40,7 +40,7 @@
 				"AutomaticWeatherStation_en" : "Clear Water Bay",
 				"AutomaticWeatherStation_sc" : "清水湾",
 				"AutomaticWeatherStation_uc" : "清水灣",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_2.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_2.csv",
 				"gml_id" : "latest_1min_humidity.2"
 			}
 		},
@@ -54,7 +54,7 @@
 				"AutomaticWeatherStation_en" : "HK Observatory",
 				"AutomaticWeatherStation_sc" : "天文台",
 				"AutomaticWeatherStation_uc" : "天文台",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_3.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_3.csv",
 				"gml_id" : "latest_1min_humidity.3"
 			}
 		},
@@ -68,7 +68,7 @@
 				"AutomaticWeatherStation_en" : "Hong Kong Park",
 				"AutomaticWeatherStation_sc" : "香港公园",
 				"AutomaticWeatherStation_uc" : "香港公園",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_4.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_4.csv",
 				"gml_id" : "latest_1min_humidity.4"
 			}
 		},
@@ -82,7 +82,7 @@
 				"AutomaticWeatherStation_en" : "Kai Tak Runway Park",
 				"AutomaticWeatherStation_sc" : "启德跑道公园",
 				"AutomaticWeatherStation_uc" : "啟德跑道公園",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_5.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_5.csv",
 				"gml_id" : "latest_1min_humidity.5"
 			}
 		},
@@ -96,7 +96,7 @@
 				"AutomaticWeatherStation_en" : "Kau Sai Chau",
 				"AutomaticWeatherStation_sc" : "滘西洲",
 				"AutomaticWeatherStation_uc" : "滘西洲",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_6.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_6.csv",
 				"gml_id" : "latest_1min_humidity.6"
 			}
 		},
@@ -110,7 +110,7 @@
 				"AutomaticWeatherStation_en" : "King's Park",
 				"AutomaticWeatherStation_sc" : "京士柏",
 				"AutomaticWeatherStation_uc" : "京士柏",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_7.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_7.csv",
 				"gml_id" : "latest_1min_humidity.7"
 			}
 		},
@@ -124,7 +124,7 @@
 				"AutomaticWeatherStation_en" : "Kowloon City",
 				"AutomaticWeatherStation_sc" : "九龙城",
 				"AutomaticWeatherStation_uc" : "九龍城",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_8.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_8.csv",
 				"gml_id" : "latest_1min_humidity.8"
 			}
 		},
@@ -138,7 +138,7 @@
 				"AutomaticWeatherStation_en" : "Lau Fau Shan",
 				"AutomaticWeatherStation_sc" : "流浮山",
 				"AutomaticWeatherStation_uc" : "流浮山",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_9.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_9.csv",
 				"gml_id" : "latest_1min_humidity.9"
 			}
 		},
@@ -152,7 +152,7 @@
 				"AutomaticWeatherStation_en" : "Pak Tam Chung",
 				"AutomaticWeatherStation_sc" : "北潭涌",
 				"AutomaticWeatherStation_uc" : "北潭涌",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_10.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_10.csv",
 				"gml_id" : "latest_1min_humidity.10"
 			}
 		},
@@ -166,7 +166,7 @@
 				"AutomaticWeatherStation_en" : "Peng Chau",
 				"AutomaticWeatherStation_sc" : "坪洲",
 				"AutomaticWeatherStation_uc" : "坪洲",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_11.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_11.csv",
 				"gml_id" : "latest_1min_humidity.11"
 			}
 		},
@@ -180,7 +180,7 @@
 				"AutomaticWeatherStation_en" : "Sai Kung",
 				"AutomaticWeatherStation_sc" : "西贡",
 				"AutomaticWeatherStation_uc" : "西貢",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_12.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_12.csv",
 				"gml_id" : "latest_1min_humidity.12"
 			}
 		},
@@ -194,7 +194,7 @@
 				"AutomaticWeatherStation_en" : "Sha Tin",
 				"AutomaticWeatherStation_sc" : "沙田",
 				"AutomaticWeatherStation_uc" : "沙田",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_13.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_13.csv",
 				"gml_id" : "latest_1min_humidity.13"
 			}
 		},
@@ -208,7 +208,7 @@
 				"AutomaticWeatherStation_en" : "Shau Kei Wan",
 				"AutomaticWeatherStation_sc" : "筲箕湾",
 				"AutomaticWeatherStation_uc" : "筲箕灣",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_14.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_14.csv",
 				"gml_id" : "latest_1min_humidity.14"
 			}
 		},
@@ -222,7 +222,7 @@
 				"AutomaticWeatherStation_en" : "Shek Kong",
 				"AutomaticWeatherStation_sc" : "石岗",
 				"AutomaticWeatherStation_uc" : "石崗",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_15.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_15.csv",
 				"gml_id" : "latest_1min_humidity.15"
 			}
 		},
@@ -236,7 +236,7 @@
 				"AutomaticWeatherStation_en" : "Sheung Shui",
 				"AutomaticWeatherStation_sc" : "上水",
 				"AutomaticWeatherStation_uc" : "上水",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_16.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_16.csv",
 				"gml_id" : "latest_1min_humidity.16"
 			}
 		},
@@ -250,7 +250,7 @@
 				"AutomaticWeatherStation_en" : "Ta Kwu Ling",
 				"AutomaticWeatherStation_sc" : "打鼓岭",
 				"AutomaticWeatherStation_uc" : "打鼓嶺",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_17.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_17.csv",
 				"gml_id" : "latest_1min_humidity.17"
 			}
 		},
@@ -264,7 +264,7 @@
 				"AutomaticWeatherStation_en" : "Tai Lung",
 				"AutomaticWeatherStation_sc" : "大陇",
 				"AutomaticWeatherStation_uc" : "大隴",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_18.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_18.csv",
 				"gml_id" : "latest_1min_humidity.18"
 			}
 		},
@@ -278,7 +278,7 @@
 				"AutomaticWeatherStation_en" : "Tai Po",
 				"AutomaticWeatherStation_sc" : "大埔",
 				"AutomaticWeatherStation_uc" : "大埔",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_19.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_19.csv",
 				"gml_id" : "latest_1min_humidity.19"
 			}
 		},
@@ -292,7 +292,7 @@
 				"AutomaticWeatherStation_en" : "Tseung Kwan O",
 				"AutomaticWeatherStation_sc" : "将军澳",
 				"AutomaticWeatherStation_uc" : "將軍澳",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_20.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_20.csv",
 				"gml_id" : "latest_1min_humidity.20"
 			}
 		},
@@ -306,7 +306,7 @@
 				"AutomaticWeatherStation_en" : "Tsing Yi",
 				"AutomaticWeatherStation_sc" : "青衣",
 				"AutomaticWeatherStation_uc" : "青衣",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_21.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_21.csv",
 				"gml_id" : "latest_1min_humidity.21"
 			}
 		},
@@ -320,7 +320,7 @@
 				"AutomaticWeatherStation_en" : "Tuen Mun",
 				"AutomaticWeatherStation_sc" : "屯门",
 				"AutomaticWeatherStation_uc" : "屯門",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_22.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_22.csv",
 				"gml_id" : "latest_1min_humidity.22"
 			}
 		},
@@ -334,7 +334,7 @@
 				"AutomaticWeatherStation_en" : "Waglan Island",
 				"AutomaticWeatherStation_sc" : "横澜岛",
 				"AutomaticWeatherStation_uc" : "橫瀾島",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_23.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_23.csv",
 				"gml_id" : "latest_1min_humidity.23"
 			}
 		},
@@ -348,7 +348,7 @@
 				"AutomaticWeatherStation_en" : "Wetland Park",
 				"AutomaticWeatherStation_sc" : "湿地公园",
 				"AutomaticWeatherStation_uc" : "濕地公園",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_24.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_24.csv",
 				"gml_id" : "latest_1min_humidity.24"
 			}
 		},
@@ -362,7 +362,7 @@
 				"AutomaticWeatherStation_en" : "Wong Chuk Hang",
 				"AutomaticWeatherStation_sc" : "黄竹坑",
 				"AutomaticWeatherStation_uc" : "黃竹坑",
-				"Data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_25.csv",
+				"Data_url" : "RH_data/latest_1min_humidity_csdi_25.csv",
 				"gml_id" : "latest_1min_humidity.25"
 			}
 		}
