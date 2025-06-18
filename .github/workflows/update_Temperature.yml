@@ -67,7 +67,7 @@ jobs:
 
       - name: Update GeoJSON to point to local CSV files
         run: |
-          python update_geojson.py
+          python temperature_update.py
       
       - name: Commit and push changes
         env:
