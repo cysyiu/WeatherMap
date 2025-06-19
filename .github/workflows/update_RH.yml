@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0   # Fetch full history to avoid conflicts
 
       - name: Create temperature data folder if not exists
-        run: mkdir -p RH_data
+        run: mkdir -p Data/RH_data
 
       - name: Update CSV files
         run: |
@@ -50,12 +50,12 @@ jobs:
           )
           for i in "${!urls[@]}"; do
             echo "Fetching ${urls[$i]}"
-            curl -s -o RH_data/latest_1min_humidity_csdi_${i}.csv "${urls[$i]}"
+            curl -s -o Data/RH_data/latest_1min_humidity_csdi_${i}.csv "${urls[$i]}"
           done
 
       - name: Update GeoJSON to point to local CSV files
         run: |
-          python rh_update.py
+          python Python/rh_update.py
       
       - name: Commit and push changes
         env:
