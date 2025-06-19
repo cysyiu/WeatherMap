@@ -61,7 +61,7 @@ async function fetchWeatherStations(weatherElement) {
                     feature.properties.gust = parseFloat(data[gustIndex]);
                 } else {
                     const valueIndex = weatherElement === 'humidity' ? 
-                        headers.indexOf('Relative Humidity(%)') : 
+                        headers.indexOf('Relative Humidity(percent)') : 
                         headers.indexOf('Air Temperature(degree Celsius)');
                     if (valueIndex === -1) throw new Error(`${weatherElement === 'humidity' ? 'Relative Humidity(%)' : 'Air Temperature(degree Celsius)'} column not found in CSV`);
                     const data = lines[1].split(',').map(value => value.trim());
