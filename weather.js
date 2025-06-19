@@ -57,12 +57,13 @@ async function fetchWeatherStations(weatherElement) {
                     }
                     const data = lines[1].split(',').map(value => value.trim());
                     feature.properties.direction = data[dirIndex];
-                    feature.properties.speed_kmh = parseFloat(data[speedIndex]); // Store in km/h for display
-                    feature.properties.speed_ms = feature.properties.speed_kmh * 0.277778; // Convert to m/s for getWindBarb
+                    feature.properties.speed_kmh = parseFloat(data[speedIndex]);
+                    feature.properties.speed_ms = feature.properties.speed_kmh * 0.277778; // Convert to m/s
                     feature.properties.gust = parseFloat(data[gustIndex]);
+                    console.log(`Station ${feature.properties.AutomaticWeatherStation_en}: direction=${feature.properties.direction}, speed_ms=${feature.properties.speed_ms}, gust=${feature.properties.gust}`); // Debug
                 } else {
                     const valueIndex = weatherElement === 'humidity' ? 
-                        headers.indexOf('Relative Humidity(percent)') : 
+                        headers.indexOf('Relative Humidity(%)') : 
                         headers.indexOf('Air Temperature(degree Celsius)');
                     if (valueIndex === -1) throw new Error(`${weatherElement === 'humidity' ? 'Relative Humidity(%)' : 'Air Temperature(degree Celsius)'} column not found in CSV`);
                     const data = lines[1].split(',').map(value => value.trim());
@@ -87,6 +88,7 @@ async function fetchWeatherStations(weatherElement) {
             (feature.properties.direction && feature.properties.speed_ms !== null && feature.properties.gust !== null) : 
             feature.properties.value !== null
         );
+        console.log(`Filtered ${weatherElement} features:`, geojson.features); // Debug
         return geojson;
     } catch (error) {
         console.error(`Failed to fetch ${weatherElement} stations:`, error);
@@ -109,27 +111,29 @@ function getStationStyle(feature, weatherData, hover = false) {
         const direction = feature.get('direction');
         const speed_ms = feature.get('speed_ms');
         const gust = feature.get('gust');
-        if (!direction || speed_ms === null || gust === null) {
+        if (!direction || speed_ms === null || gust === null || !COMPASS_TO_DEGREES[direction]) {
+            console.warn(`Invalid wind data for ${stationName}: direction=${direction}, speed_ms=${speed_ms}, gust=${gust}`);
             return new ol.style.Style({});
         }
         const degrees = COMPASS_TO_DEGREES[direction] || 0;
         const radians = degrees * Math.PI / 180;
-        const svgPath = window.getWindBarb(speed_ms); // Use global getWindBarb
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250"><style>.svg-wb{fill:#1A232D;stroke:#1A232D}</style>${svgPath}</svg>`;
+        const svgPath = window.getWindBarb(speed_ms);
+        console.log(`Wind barb for ${stationName}: speed_ms=${speed_ms}, svgPath=${svgPath}`); // Debug
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250"><style>.svg-wb{fill:#1A232D;stroke:#1A232D;stroke-width:2}</style>${svgPath}</svg>`;
         const svgUrl = 'data:image/svg+xml;base64,' + btoa(svg);
         return new ol.style.Style({
             image: new ol.style.Icon({
                 src: svgUrl,
-                scale: 0.1, // Adjust size
+                scale: 0.2, // Increased for visibility
                 rotation: radians,
                 anchor: [0.5, 0.5] // Center at station
             }),
             text: new ol.style.Text({
-                text: `${gust} km/h`,
+                text: hover ? stationName : `${gust} km/h`,
                 fill: new ol.style.Fill({ color: 'black' }),
                 stroke: new ol.style.Stroke({ color: 'white', width: 3 }),
                 font: 'bold 12px Arial',
-                offsetY: -20 // Above the barb
+                offsetY: hover ? 15 : -20 // Station name below on hover, gust above otherwise
             })
         });
     } else {
@@ -408,7 +412,7 @@ function createWeatherBox() {
     title.textContent = 'Current Weather';
     const weatherIcon = document.createElement('img');
     weatherIcon.className = 'weather-icon';
-    const divider = document.createElement('hr'); // Fixed syntax
+    const divider = document.createElement('hr');
     divider.className = 'weather-divider';
     const timeUpdate = document.createElement('div');
     timeUpdate.className = 'weather-time';
