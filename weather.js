@@ -124,7 +124,7 @@ function getStationStyle(feature, weatherData, hover = false) {
         return new ol.style.Style({
             image: new ol.style.Icon({
                 src: svgUrl,
-                scale: 0.2, // Increased for visibility
+                scale: 1, // Increased for visibility
                 rotation: radians,
                 anchor: [0.5, 0.5] // Center at station
             }),
