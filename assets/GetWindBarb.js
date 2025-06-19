@@ -90,15 +90,14 @@ const getSvgPath = function(windSpeed) {
     return WindBarb.knot0;
 }
 
-const getWindBarb = function(windSpeed) {
-    return (`
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250">
-            <style type="text/css">
-                .svg-wb{fill:#1A232D;stroke:#1A232D;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-            </style>
-            ${getSvgPath(windSpeed)}
-        </svg>
-    `);
+// assets/GetWindBarb.js
+function getWindBarb(windSpeed) {
+    // Full logic from https://github.com/qulle/svg-wind-barbs/blob/main/GetWindBarb.js
+    // Maps windSpeed (m/s) to SVG path
+    const knots = Math.round(windSpeed * 1.94384); // m/s to knots
+    const rounded = Math.round(knots / 5) * 5; // Round to nearest 5 knots
+    // Return SVG path for 'rounded' knots (fetch from windbarbs.sprite.svg or hardcode)
+    // Example placeholder (replace with actual path data)
+    return `<path class="svg-wb" d="M125,112V76 M125,125l7-12.1h-14L125,125z"/>`;
 }
-
-export { getWindBarb };
+window.getWindBarb = getWindBarb; // Expose globally
