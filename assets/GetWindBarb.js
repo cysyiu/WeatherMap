@@ -1,3 +1,4 @@
+// assets/GetWindBarb.js
 const WindBarb = Object.freeze({
     knot0: '<path fill="#1A232D" d="M125,120c2.762,0,5,2.239,5,5c0,2.762-2.238,5-5,5c-2.761,0-5-2.238-5-5C120,122.239,122.239,120,125,120z"/><path fill="none" stroke="#1A232D" stroke-width="2" d="M125,115c5.523,0,10,4.477,10,10c0,5.523-4.477,10-10,10 c-5.523,0-10-4.477-10-10C115,119.477,119.477,115,125,115z "/>',
     knot2: '<path class="svg-wb" d="M125,112V76 M125,125l7-12.1h-14L125,125z"/>',
@@ -43,61 +44,45 @@ const WindBarb = Object.freeze({
 
 const roundToNearest = function(value, nearest) {
     return Math.round(value / nearest) * nearest;
-}
+};
 
 const roundDownToNearest = function(value, nearest) {
     return Math.floor(value / nearest) * nearest;
-}
+};
 
 const metersPerSecondToKnots = function(mps) {
     return mps * 1.943844;
-}
+};
 
 const hasNestedProperty = (obj, prop, ...rest) => {
-    if(obj === undefined) {
+    if (obj === undefined) {
         return false;
     }
-
-    if(
-        rest.length === 0 &&
-        Object.prototype.hasOwnProperty.call(obj, prop)
-    ) {
+    if (rest.length === 0 && Object.prototype.hasOwnProperty.call(obj, prop)) {
         return true;
     }
-
     return hasNestedProperty(obj[prop], ...rest);
-}
+};
 
 const getSvgPath = function(windSpeed) {
     // Base case that breaks the pattern of 2.5 m/s steps
-    if(windSpeed >= 1.0  && windSpeed < 2.5) {
+    if (windSpeed >= 1.0 && windSpeed < 2.5) {
         return WindBarb.knot2;
     }
-
     const meterPerSecondStep = 2.5;
     const lowerMeterPerSecond = roundDownToNearest(windSpeed, meterPerSecondStep);
-
     const knots = metersPerSecondToKnots(lowerMeterPerSecond);
-
     const knotPerSecondStep = 5;
     const lowerKnotPerSecond = roundToNearest(knots, knotPerSecondStep);
-    
     const windBarbName = `knot${lowerKnotPerSecond}`;
-    if(hasNestedProperty(WindBarb, windBarbName)) {
+    if (hasNestedProperty(WindBarb, windBarbName)) {
         return WindBarb[windBarbName];
     }
-
     return WindBarb.knot0;
+};
+
+function getWindBarb(windSpeed) {
+    return getSvgPath(windSpeed);
 }
 
-// assets/GetWindBarb.js
-function getWindBarb(windSpeed) {
-    // Full logic from https://github.com/qulle/svg-wind-barbs/blob/main/GetWindBarb.js
-    // Maps windSpeed (m/s) to SVG path
-    const knots = Math.round(windSpeed * 1.94384); // m/s to knots
-    const rounded = Math.round(knots / 5) * 5; // Round to nearest 5 knots
-    // Return SVG path for 'rounded' knots (fetch from windbarbs.sprite.svg or hardcode)
-    // Example placeholder (replace with actual path data)
-    return `<path class="svg-wb" d="M125,112V76 M125,125l7-12.1h-14L125,125z"/>`;
-}
 window.getWindBarb = getWindBarb; // Expose globally
