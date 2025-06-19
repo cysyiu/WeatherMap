@@ -1,9 +1,8 @@
 #map {
     height: 500px;
     width: 100%;
-    position: relative;  /* Add this line */
+    position: relative;
 }
-
 
 .ol-tooltip {
     position: absolute;
@@ -16,81 +15,86 @@
 }
 
 .ol-popup {
-        position: absolute;
-        background-color: white;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-        padding: 15px;
-        border-radius: 10px;
-        border: 1px solid #cccccc;
-        bottom: 12px;
-        left: -50px;
-        min-width: 180px;
-      }
-.ol-popup:after, .ol-popup:before {
-        top: 100%;
-        border: solid transparent;
-        content: " ";
-        height: 0;
-        width: 0;
-        position: absolute;
-        pointer-events: none;
-      }
-.ol-popup:after {
-        border-top-color: white;
-        border-width: 10px;
-        left: 48px;
-        margin-left: -10px;
-      }
-.ol-popup:before {
-        border-top-color: #cccccc;
-        border-width: 11px;
-        left: 48px;
-        margin-left: -11px;
-      }
-.ol-popup-closer {
-        text-decoration: none;
-        position: absolute;
-        top: 2px;
-        right: 8px;
-      }
-.ol-popup-closer:after {
-        content: "✖";
-      }
-	  
-.map-legend {
     position: absolute;
-    bottom: 20px;
-    left: 20px;
     background-color: white;
     box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     padding: 15px;
     border-radius: 10px;
     border: 1px solid #cccccc;
-    min-width: 100px;
+    bottom: 12px;
+    left: -50px;
+    min-width: 180px;
+}
+
+.ol-popup:after, .ol-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.ol-popup:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 48px;
+    margin-left: -10px;
+}
+
+.ol-popup:before {
+    border-top-color: #cccccc;
+    border-width: 11px;
+    left: 48px;
+    margin-left: -11px;
+}
+
+.ol-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+}
+
+.ol-popup-closer:after {
+    content: "✖";
+}
+
+.ol-hover-popup {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    font: bold 14px Arial;
+    color: black;
+    text-align: center;
     z-index: 1000;
 }
-.map-legend-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
+
+.ol-hover-content {
+    white-space: nowrap;
 }
 
-.map-legend-color-box {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
-    border: 1px solid #ccc;
-}
-
-.map-legend-title {
-    font-weight: bold;
-    margin-bottom: 5px;
+.warning-message-bar {
+    position: absolute;
+    top: 0;
+    left: 50px;
+    right: 150px;
+    background-color: rgba(255, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    font-size: 14px;
+    z-index: 5000;
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 .weather-box {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
     background-color: white;
     padding: 12px 15px;
     border-radius: 5px;
@@ -121,4 +125,117 @@
     width: 50px;
     height: 50px;
     margin: 10px auto;
+}
+
+.weather-forecast-box {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: white;
+    padding: 12px 15px;
+    border-radius: 5px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    font-size: 14px;
+    z-index: 1000;
+    text-align: left;
+}
+
+.weather-forecast-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.weather-forecast-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.weather-forecast-item {
+    display: grid;
+    grid-template-columns: 80px 40px 80px;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.forecast-date {
+    font-weight: bold;
+    text-align: left;
+}
+
+.forecast-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.forecast-temps {
+    text-align: right;
+    font-size: 11px;
+}
+
+.toggle-button {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.weather-selector {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.weather-selector-title {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.weather-selector select {
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.ol-control {
+    top: 0.5em !important;
+    left: 0.5em !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+}
+
+.ol-zoom-in, .ol-zoom-out, .ol-geocoder, .ol-home {
+    background-color: rgba(255,255,255,0.4) !important;
+    border-radius: 2px !important;
+    width: 24px !important;
+    height: 24px !important;
+    padding: 2px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none !important;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.65) !important;
+}
+
+.ol-zoom-in:hover, .ol-zoom-out:hover, .ol-geocoder:hover, .ol-home:hover {
+    background-color: rgba(255,255,255,0.6) !important;
 }
