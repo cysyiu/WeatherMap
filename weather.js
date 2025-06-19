@@ -408,7 +408,7 @@ function createWeatherBox() {
     title.textContent = 'Current Weather';
     const weatherIcon = document.createElement('img');
     weatherIcon.className = 'weather-icon';
-    const divider = document.createElement('hr';
+    const divider = document.createElement('hr');
     divider.className = 'weather-divider';
     const timeUpdate = document.createElement('div');
     timeUpdate.className = 'weather-time';
