@@ -57,7 +57,8 @@ async function fetchWeatherStations(weatherElement) {
                     }
                     const data = lines[1].split(',').map(value => value.trim());
                     feature.properties.direction = data[dirIndex];
-                    feature.properties.speed = parseFloat(data[speedIndex]);
+                    feature.properties.speed_kmh = parseFloat(data[speedIndex]); // Store in km/h for display
+                    feature.properties.speed_ms = feature.properties.speed_kmh * 0.277778; // Convert to m/s for getWindBarb
                     feature.properties.gust = parseFloat(data[gustIndex]);
                 } else {
                     const valueIndex = weatherElement === 'humidity' ? 
@@ -72,7 +73,8 @@ async function fetchWeatherStations(weatherElement) {
                 console.error(`Failed to fetch CSV for ${feature.properties.AutomaticWeatherStation_en}:`, error);
                 if (weatherElement === 'wind') {
                     feature.properties.direction = null;
-                    feature.properties.speed = null;
+                    feature.properties.speed_kmh = null;
+                    feature.properties.speed_ms = null;
                     feature.properties.gust = null;
                 } else {
                     feature.properties.value = null;
@@ -82,7 +84,7 @@ async function fetchWeatherStations(weatherElement) {
         }));
         geojson.features = features.filter(feature => 
             weatherElement === 'wind' ? 
-            (feature.properties.direction && feature.properties.speed !== null && feature.properties.gust !== null) : 
+            (feature.properties.direction && feature.properties.speed_ms !== null && feature.properties.gust !== null) : 
             feature.properties.value !== null
         );
         return geojson;
@@ -105,27 +107,29 @@ function getStationStyle(feature, weatherData, hover = false) {
     
     if (weatherElement === 'wind') {
         const direction = feature.get('direction');
-        const speed = feature.get('speed');
+        const speed_ms = feature.get('speed_ms');
         const gust = feature.get('gust');
-        if (!direction || speed === null || gust === null) {
+        if (!direction || speed_ms === null || gust === null) {
             return new ol.style.Style({});
         }
         const degrees = COMPASS_TO_DEGREES[direction] || 0;
         const radians = degrees * Math.PI / 180;
-        const scale = Math.max(0.5, Math.min(speed / 50, 1.5)); // Scale arrow by speed
+        const svgPath = getWindBarb(speed_ms); // From GetWindBarb.js
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250">${svgPath}</svg>`;
+        const svgUrl = 'data:image/svg+xml;base64,' + btoa(svg);
         return new ol.style.Style({
             image: new ol.style.Icon({
-                src: 'img/wind_arrow.png',
-                scale: scale,
+                src: svgUrl,
+                scale: 0.1, // Adjust size to fit map
                 rotation: radians,
-                anchor: [0.5, 0.5] // Center the arrow
+                anchor: [0.5, 0.5] // Center at station
             }),
             text: new ol.style.Text({
                 text: `${gust} km/h`,
                 fill: new ol.style.Fill({ color: 'black' }),
                 stroke: new ol.style.Stroke({ color: 'white', width: 3 }),
                 font: 'bold 12px Arial',
-                offsetY: -15 // Above the arrow
+                offsetY: -20 // Above the barb
             })
         });
     } else {
@@ -404,7 +408,7 @@ function createWeatherBox() {
     title.textContent = 'Current Weather';
     const weatherIcon = document.createElement('img');
     weatherIcon.className = 'weather-icon';
-    const divider = document.createElement('hr');
+    const divider = document.createElement('hr';
     divider.className = 'weather-divider';
     const timeUpdate = document.createElement('div');
     timeUpdate.className = 'weather-time';
@@ -543,10 +547,10 @@ async function handleMapClick(evt, popupContent, popup, weatherElement) {
             const stationName = feature.feature.get('AutomaticWeatherStation_en');
             if (weatherElement === 'wind') {
                 const direction = feature.feature.get('direction');
-                const speed = feature.feature.get('speed');
+                const speed_kmh = feature.feature.get('speed_kmh');
                 const gust = feature.feature.get('gust');
-                if (direction && speed !== null && gust !== null) {
-                    popupContent.innerHTML = `${stationName}: ${direction}, ${speed} km/h, Max Gust ${gust} km/h`;
+                if (direction && speed_kmh !== null && gust !== null) {
+                    popupContent.innerHTML = `${stationName}: ${direction}, ${speed_kmh} km/h, Max Gust ${gust} km/h`;
                     popup.setPosition(evt.coordinate);
                 }
             } else if (weatherElement === 'temperature' || weatherElement === 'humidity') {
