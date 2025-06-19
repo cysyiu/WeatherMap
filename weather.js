@@ -1,6 +1,12 @@
 const HONG_KONG_CENTER = [114.1095, 22.3964];
 const RAINFALL_RANGES = [0, 20, 40, 60, 80, 100];
 
+// Map compass points to degrees (clockwise from North = 0°)
+const COMPASS_TO_DEGREES = {
+    'North': 0, 'Northeast': 45, 'East': 90, 'Southeast': 135,
+    'South': 180, 'Southwest': 225, 'West': 270, 'Northwest': 315
+};
+
 async function fetchWeatherData() {
     try {
         const response = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en');
@@ -27,7 +33,10 @@ async function fetchWeatherForecast() {
 
 async function fetchWeatherStations(weatherElement) {
     try {
-        const geojsonFile = weatherElement === 'humidity' ? 'Data/latest_humidity.geojson' : 'Data/latest_temperature.geojson';
+        let geojsonFile;
+        if (weatherElement === 'humidity') geojsonFile = 'Data/latest_humidity.geojson';
+        else if (weatherElement === 'wind') geojsonFile = 'Data/latest_wind.geojson';
+        else geojsonFile = 'Data/latest_temperature.geojson';
         const response = await fetch(geojsonFile);
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const geojson = await response.json();
@@ -39,20 +48,43 @@ async function fetchWeatherStations(weatherElement) {
                 const csvText = await csvResponse.text();
                 const lines = csvText.split('\n').filter(line => line.trim() !== '');
                 const headers = lines[0].split(',').map(header => header.trim());
-                const valueIndex = weatherElement === 'humidity' ? 
-                    headers.indexOf('Relative Humidity(%)') : 
-                    headers.indexOf('Air Temperature(degree Celsius)');
-                if (valueIndex === -1) throw new Error(`${weatherElement === 'humidity' ? 'Relative Humidity(%)' : 'Air Temperature(degree Celsius)'} column not found in CSV`);
-                const data = lines[1].split(',').map(value => value.trim());
-                feature.properties.value = parseFloat(data[valueIndex]);
+                if (weatherElement === 'wind') {
+                    const dirIndex = headers.indexOf('10-Minute Mean Wind Direction(Compass points)');
+                    const speedIndex = headers.indexOf('10-Minute Mean Speed(km/hour)');
+                    const gustIndex = headers.indexOf('10-Minute Maximum Gust(km/hour)');
+                    if (dirIndex === -1 || speedIndex === -1 || gustIndex === -1) {
+                        throw new Error('Wind columns not found in CSV');
+                    }
+                    const data = lines[1].split(',').map(value => value.trim());
+                    feature.properties.direction = data[dirIndex];
+                    feature.properties.speed = parseFloat(data[speedIndex]);
+                    feature.properties.gust = parseFloat(data[gustIndex]);
+                } else {
+                    const valueIndex = weatherElement === 'humidity' ? 
+                        headers.indexOf('Relative Humidity(%)') : 
+                        headers.indexOf('Air Temperature(degree Celsius)');
+                    if (valueIndex === -1) throw new Error(`${weatherElement === 'humidity' ? 'Relative Humidity(%)' : 'Air Temperature(degree Celsius)'} column not found in CSV`);
+                    const data = lines[1].split(',').map(value => value.trim());
+                    feature.properties.value = parseFloat(data[valueIndex]);
+                }
                 return feature;
             } catch (error) {
                 console.error(`Failed to fetch CSV for ${feature.properties.AutomaticWeatherStation_en}:`, error);
-                feature.properties.value = null;
+                if (weatherElement === 'wind') {
+                    feature.properties.direction = null;
+                    feature.properties.speed = null;
+                    feature.properties.gust = null;
+                } else {
+                    feature.properties.value = null;
+                }
                 return feature;
             }
         }));
-        geojson.features = features.filter(feature => feature.properties.value !== null);
+        geojson.features = features.filter(feature => 
+            weatherElement === 'wind' ? 
+            (feature.properties.direction && feature.properties.speed !== null && feature.properties.gust !== null) : 
+            feature.properties.value !== null
+        );
         return geojson;
     } catch (error) {
         console.error(`Failed to fetch ${weatherElement} stations:`, error);
@@ -69,27 +101,53 @@ function getRainfallColor(value) {
 
 function getStationStyle(feature, weatherData, hover = false) {
     const stationName = feature.get('AutomaticWeatherStation_en');
-    const value = feature.get('value');
     const weatherElement = document.querySelector('.weather-selector select').value;
     
-    if (!value) {
-        return new ol.style.Style({});
+    if (weatherElement === 'wind') {
+        const direction = feature.get('direction');
+        const speed = feature.get('speed');
+        const gust = feature.get('gust');
+        if (!direction || speed === null || gust === null) {
+            return new ol.style.Style({});
+        }
+        const degrees = COMPASS_TO_DEGREES[direction] || 0;
+        const radians = degrees * Math.PI / 180;
+        const scale = Math.max(0.5, Math.min(speed / 50, 1.5)); // Scale arrow by speed
+        return new ol.style.Style({
+            image: new ol.style.Icon({
+                src: 'img/wind_arrow.png',
+                scale: scale,
+                rotation: radians,
+                anchor: [0.5, 0.5] // Center the arrow
+            }),
+            text: new ol.style.Text({
+                text: `${gust} km/h`,
+                fill: new ol.style.Fill({ color: 'black' }),
+                stroke: new ol.style.Stroke({ color: 'white', width: 3 }),
+                font: 'bold 12px Arial',
+                offsetY: -15 // Above the arrow
+            })
+        });
+    } else {
+        const value = feature.get('value');
+        if (!value) {
+            return new ol.style.Style({});
+        }
+        return new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: hover ? 6 : 4,
+                fill: new ol.style.Fill({ color: hover ? 'red' : 'blue' }),
+                stroke: new ol.style.Stroke({ color: 'white', width: 2 })
+            }),
+            text: new ol.style.Text({
+                text: weatherElement === 'humidity' ? `${value}%` : `${value}°C`,
+                fill: new ol.style.Fill({ color: 'black' }),
+                stroke: new ol.style.Stroke({ color: 'white', width: 3 }),
+                font: 'bold 14px Arial',
+                offsetY: -10
+            })
+        });
     }
-    
-    return new ol.style.Style({
-        image: new ol.style.Circle({
-            radius: hover ? 6 : 4,
-            fill: new ol.style.Fill({ color: hover ? 'red' : 'blue' }),
-            stroke: new ol.style.Stroke({ color: 'white', width: 2 })
-        }),
-        text: new ol.style.Text({
-            text: weatherElement === 'humidity' ? `${value}%` : `${value}°C`,
-            fill: new ol.style.Fill({ color: 'black' }),
-            stroke: new ol.style.Stroke({ color: 'white', width: 3 }),
-            font: 'bold 14px Arial',
-            offsetY: -10
-        })
-    });
 }
 
 function getDistrictStyle(feature, weatherData) {
@@ -267,7 +325,8 @@ async function addWeatherStationsLayer(weatherElement) {
     });
     stationLayer = new ol.layer.Vector({
         source: stationSource,
-        style: (weatherElement === 'temperature' || weatherElement === 'humidity') ? (feature) => getStationStyle(feature, null) : new ol.style.Style({}),
+        style: (weatherElement === 'temperature' || weatherElement === 'humidity' || weatherElement === 'wind') ? 
+            (feature) => getStationStyle(feature, null) : new ol.style.Style({}),
         zIndex: 2
     });
     map.addLayer(stationLayer);
@@ -314,7 +373,7 @@ function initializeHoverOverlay() {
 function createWarningMessageBar() {
     const warningBar = document.createElement('div');
     warningBar.className = 'warning-message-bar';
-    warningBar.style.display = 'block'; // Always show the bar
+    warningBar.style.display = 'block';
     const mapElement = document.getElementById('map');
     if (!mapElement) {
         console.error('Map element not found in DOM');
@@ -326,10 +385,10 @@ function createWarningMessageBar() {
         const weatherData = await fetchWeatherData();
         if (typeof weatherData.warningMessage === 'string' && weatherData.warningMessage.trim() !== '') {
             warningBar.textContent = weatherData.warningMessage;
-            warningBar.style.backgroundColor = 'rgba(255, 0, 0, 0.8)'; // Red for warnings
+            warningBar.style.backgroundColor = 'rgba(255, 0, 0, 0.8)';
         } else {
             warningBar.textContent = 'There is no warning in force';
-            warningBar.style.backgroundColor = 'rgba(0, 128, 0, 0.8)'; // Green for no warnings
+            warningBar.style.backgroundColor = 'rgba(0, 128, 0, 0.8)';
         }
     }
 
@@ -448,6 +507,7 @@ function createWeatherSelector() {
         <option value="temperature">Temperature</option>
         <option value="humidity">Relative Humidity</option>
         <option value="rainfall">Rainfall</option>
+        <option value="wind">Wind</option>
     `;
     select.addEventListener('change', (e) => {
         const weatherElement = e.target.value;
@@ -479,12 +539,22 @@ async function handleMapClick(evt, popupContent, popup, weatherElement) {
                 popupContent.innerHTML = `${districtName}: ${rainfallData.max} mm`;
                 popup.setPosition(center);
             }
-        } else if (feature.feature.get('AutomaticWeatherStation_en') && (weatherElement === 'temperature' || weatherElement === 'humidity')) {
+        } else if (feature.feature.get('AutomaticWeatherStation_en')) {
             const stationName = feature.feature.get('AutomaticWeatherStation_en');
-            const value = feature.feature.get('value');
-            if (value) {
-                popupContent.innerHTML = `${stationName}: ${weatherElement === 'humidity' ? `${value}%` : `${value}°C`}`;
-                popup.setPosition(evt.coordinate);
+            if (weatherElement === 'wind') {
+                const direction = feature.feature.get('direction');
+                const speed = feature.feature.get('speed');
+                const gust = feature.feature.get('gust');
+                if (direction && speed !== null && gust !== null) {
+                    popupContent.innerHTML = `${stationName}: ${direction}, ${speed} km/h, Max Gust ${gust} km/h`;
+                    popup.setPosition(evt.coordinate);
+                }
+            } else if (weatherElement === 'temperature' || weatherElement === 'humidity') {
+                const value = feature.feature.get('value');
+                if (value) {
+                    popupContent.innerHTML = `${stationName}: ${weatherElement === 'humidity' ? `${value}%` : `${value}°C`}`;
+                    popup.setPosition(evt.coordinate);
+                }
             }
         }
     }
@@ -526,7 +596,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        if (feature && (document.querySelector('.weather-selector select').value === 'temperature' || document.querySelector('.weather-selector select').value === 'humidity')) {
+        if (feature && (document.querySelector('.weather-selector select').value === 'temperature' || 
+                        document.querySelector('.weather-selector select').value === 'humidity' || 
+                        document.querySelector('.weather-selector select').value === 'wind')) {
             if (feature !== lastHoveredFeature) {
                 const stationName = feature.get('AutomaticWeatherStation_en');
                 if (stationName) {
