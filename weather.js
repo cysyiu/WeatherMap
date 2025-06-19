@@ -63,7 +63,7 @@ async function fetchWeatherStations(weatherElement) {
                     console.log(`Station ${feature.properties.AutomaticWeatherStation_en}: direction=${feature.properties.direction}, speed_ms=${feature.properties.speed_ms}, gust=${feature.properties.gust}`); // Debug
                 } else {
                     const valueIndex = weatherElement === 'humidity' ? 
-                        headers.indexOf('Relative Humidity(%)') : 
+                        headers.indexOf('Relative Humidity(percent)') : 
                         headers.indexOf('Air Temperature(degree Celsius)');
                     if (valueIndex === -1) throw new Error(`${weatherElement === 'humidity' ? 'Relative Humidity(%)' : 'Air Temperature(degree Celsius)'} column not found in CSV`);
                     const data = lines[1].split(',').map(value => value.trim());
