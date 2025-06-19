@@ -62,7 +62,7 @@ async function fetchWeatherStations(weatherElement) {
                     feature.properties.gust = parseFloat(data[gustIndex]);
                 } else {
                     const valueIndex = weatherElement === 'humidity' ? 
-                        headers.indexOf('Relative Humidity(percent)') : 
+                        headers.indexOf('Relative Humidity(%)') : 
                         headers.indexOf('Air Temperature(degree Celsius)');
                     if (valueIndex === -1) throw new Error(`${weatherElement === 'humidity' ? 'Relative Humidity(%)' : 'Air Temperature(degree Celsius)'} column not found in CSV`);
                     const data = lines[1].split(',').map(value => value.trim());
@@ -114,13 +114,13 @@ function getStationStyle(feature, weatherData, hover = false) {
         }
         const degrees = COMPASS_TO_DEGREES[direction] || 0;
         const radians = degrees * Math.PI / 180;
-        const svgPath = getWindBarb(speed_ms); // From GetWindBarb.js
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250">${svgPath}</svg>`;
+        const svgPath = window.getWindBarb(speed_ms); // Use global getWindBarb
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250"><style>.svg-wb{fill:#1A232D;stroke:#1A232D}</style>${svgPath}</svg>`;
         const svgUrl = 'data:image/svg+xml;base64,' + btoa(svg);
         return new ol.style.Style({
             image: new ol.style.Icon({
                 src: svgUrl,
-                scale: 0.1, // Adjust size to fit map
+                scale: 0.1, // Adjust size
                 rotation: radians,
                 anchor: [0.5, 0.5] // Center at station
             }),
@@ -408,7 +408,7 @@ function createWeatherBox() {
     title.textContent = 'Current Weather';
     const weatherIcon = document.createElement('img');
     weatherIcon.className = 'weather-icon';
-    const divider = document.createElement('hr');
+    const divider = document.createElement('hr'); // Fixed syntax
     divider.className = 'weather-divider';
     const timeUpdate = document.createElement('div');
     timeUpdate.className = 'weather-time';
