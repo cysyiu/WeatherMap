@@ -1,0 +1,546 @@
+{
+	"type" : "FeatureCollection",
+	"name" : "hourlyRainfall",
+	"features" : [
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 113.98361111, 22.46888889 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF001",
+				"automaticWeatherStation_en" : "Lau Fau Shan",
+				"automaticWeatherStation_sc" : "流浮山",
+				"automaticWeatherStation_uc" : "流浮山",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF001.json",
+				"gml_id" : "hourlyRainfall.0"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.00888889, 22.46666667 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF002",
+				"automaticWeatherStation_en" : "Wetland Park",
+				"automaticWeatherStation_sc" : "湿地公园",
+				"automaticWeatherStation_uc" : "濕地公園",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF002.json",
+				"gml_id" : "hourlyRainfall.1"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.0209634, 22.44614626 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF003",
+				"automaticWeatherStation_en" : "Shui Pin Wai",
+				"automaticWeatherStation_sc" : "水边围",
+				"automaticWeatherStation_uc" : "水邊圍",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_N12.json",
+				"gml_id" : "hourlyRainfall.2"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.08472222, 22.43611111 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF004",
+				"automaticWeatherStation_en" : "Shek Kong",
+				"automaticWeatherStation_sc" : "石岗",
+				"automaticWeatherStation_uc" : "石崗",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF003.json",
+				"gml_id" : "hourlyRainfall.3"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.2375, 22.47527778 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF005",
+				"automaticWeatherStation_en" : "Tai Mei Tuk",
+				"automaticWeatherStation_sc" : "大美督",
+				"automaticWeatherStation_uc" : "大美督",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF004.json",
+				"gml_id" : "hourlyRainfall.4"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.17166667, 22.44555556 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF006",
+				"automaticWeatherStation_en" : "Tai Po Market",
+				"automaticWeatherStation_sc" : "大埔墟",
+				"automaticWeatherStation_uc" : "大埔墟",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF005.json",
+				"gml_id" : "hourlyRainfall.5"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.32305556, 22.40277778 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF007",
+				"automaticWeatherStation_en" : "Pak Tam Chung",
+				"automaticWeatherStation_sc" : "北潭涌",
+				"automaticWeatherStation_uc" : "北潭涌",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF006.json",
+				"gml_id" : "hourlyRainfall.6"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.3125, 22.37027778 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF008",
+				"automaticWeatherStation_en" : "Kau Sai Chau",
+				"automaticWeatherStation_sc" : "滘西洲",
+				"automaticWeatherStation_uc" : "滘西洲",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF007.json",
+				"gml_id" : "hourlyRainfall.7"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.2702835, 22.38261834 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF009",
+				"automaticWeatherStation_en" : "Sai Kung",
+				"automaticWeatherStation_sc" : "西贡",
+				"automaticWeatherStation_uc" : "西貢",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_N15.json",
+				"gml_id" : "hourlyRainfall.8"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.25555556, 22.31583333 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF010",
+				"automaticWeatherStation_en" : "Tseung Kwan O",
+				"automaticWeatherStation_sc" : "将军澳",
+				"automaticWeatherStation_uc" : "將軍澳",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF008.json",
+				"gml_id" : "hourlyRainfall.9"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.29972222, 22.26333333 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF011",
+				"automaticWeatherStation_en" : "Clear Water Bay",
+				"automaticWeatherStation_sc" : "清水湾",
+				"automaticWeatherStation_uc" : "清水灣",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF009.json",
+				"gml_id" : "hourlyRainfall.10"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.30333333, 22.18222222 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF012",
+				"automaticWeatherStation_en" : "Waglan Island",
+				"automaticWeatherStation_sc" : "横澜岛",
+				"automaticWeatherStation_uc" : "橫瀾島",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF010.json",
+				"gml_id" : "hourlyRainfall.11"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.02666667, 22.20111111 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF013",
+				"automaticWeatherStation_en" : "Cheung Chau",
+				"automaticWeatherStation_sc" : "长洲",
+				"automaticWeatherStation_uc" : "長洲",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF011.json",
+				"gml_id" : "hourlyRainfall.12"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.04333333, 22.29111111 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF014",
+				"automaticWeatherStation_en" : "Peng Chau",
+				"automaticWeatherStation_sc" : "坪洲",
+				"automaticWeatherStation_uc" : "坪洲",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF012.json",
+				"gml_id" : "hourlyRainfall.13"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 113.9113889, 22.25555556 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF015",
+				"automaticWeatherStation_en" : "Ngong Ping",
+				"automaticWeatherStation_sc" : "昂坪",
+				"automaticWeatherStation_uc" : "昂坪",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF013.json",
+				"gml_id" : "hourlyRainfall.14"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 113.92194444, 22.30944444 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF016",
+				"automaticWeatherStation_en" : "Hong Kong International Airport",
+				"automaticWeatherStation_sc" : "香港国际机场",
+				"automaticWeatherStation_uc" : "香港國際機場",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF014.json",
+				"gml_id" : "hourlyRainfall.15"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.15666667, 22.52861111 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF017",
+				"automaticWeatherStation_en" : "Ta Kwu Ling",
+				"automaticWeatherStation_sc" : "打鼓岭",
+				"automaticWeatherStation_uc" : "打鼓嶺",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF015.json",
+				"gml_id" : "hourlyRainfall.16"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.11111111, 22.50194444 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF018",
+				"automaticWeatherStation_en" : "Sheung Shui",
+				"automaticWeatherStation_sc" : "上水",
+				"automaticWeatherStation_uc" : "上水",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF016.json",
+				"gml_id" : "hourlyRainfall.17"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.1175, 22.48472222 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF019",
+				"automaticWeatherStation_en" : "Tai Lung",
+				"automaticWeatherStation_sc" : "大陇",
+				"automaticWeatherStation_uc" : "大隴",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF017.json",
+				"gml_id" : "hourlyRainfall.18"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.10777778, 22.38361111 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF020",
+				"automaticWeatherStation_en" : "Tsuen Wan Ho Koon",
+				"automaticWeatherStation_sc" : "荃湾可观",
+				"automaticWeatherStation_uc" : "荃灣可觀",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF018.json",
+				"gml_id" : "hourlyRainfall.19"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 113.96416667, 22.38583333 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF021",
+				"automaticWeatherStation_en" : "Tuen Mun",
+				"automaticWeatherStation_sc" : "屯门",
+				"automaticWeatherStation_uc" : "屯門",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF019.json",
+				"gml_id" : "hourlyRainfall.20"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.21, 22.4025 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF022",
+				"automaticWeatherStation_en" : "Sha Tin",
+				"automaticWeatherStation_sc" : "沙田",
+				"automaticWeatherStation_uc" : "沙田",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF020.json",
+				"gml_id" : "hourlyRainfall.21"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.10916667, 22.34805556 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF023",
+				"automaticWeatherStation_en" : "Cheung Ching",
+				"automaticWeatherStation_sc" : "长青",
+				"automaticWeatherStation_uc" : "長青",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF021.json",
+				"gml_id" : "hourlyRainfall.22"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.13694444, 22.33583333 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF024",
+				"automaticWeatherStation_en" : "Sham Shui Po",
+				"automaticWeatherStation_sc" : "深水埗",
+				"automaticWeatherStation_uc" : "深水埗",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF022.json",
+				"gml_id" : "hourlyRainfall.23"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.17416667, 22.30194444 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF025",
+				"automaticWeatherStation_en" : "Hong Kong Observatory",
+				"automaticWeatherStation_sc" : "天文台",
+				"automaticWeatherStation_uc" : "香港天文台",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF023.json",
+				"gml_id" : "hourlyRainfall.24"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.17277778, 22.31194444 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF026",
+				"automaticWeatherStation_en" : "King’s Park",
+				"automaticWeatherStation_sc" : "京士柏",
+				"automaticWeatherStation_uc" : "京士柏",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF024.json",
+				"gml_id" : "hourlyRainfall.25"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.17892222, 22.3429905 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF027",
+				"automaticWeatherStation_en" : "Broadcast Drive",
+				"automaticWeatherStation_sc" : "广播道",
+				"automaticWeatherStation_uc" : "廣播道",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_K02.json",
+				"gml_id" : "hourlyRainfall.26"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.21333333, 22.30972222 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF028",
+				"automaticWeatherStation_en" : "Kai Tak",
+				"automaticWeatherStation_sc" : "启德",
+				"automaticWeatherStation_uc" : "啟德",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF025.json",
+				"gml_id" : "hourlyRainfall.27"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.195705, 22.33257776 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF029",
+				"automaticWeatherStation_en" : "San Po Kong",
+				"automaticWeatherStation_sc" : "新蒲岗",
+				"automaticWeatherStation_uc" : "新蒲崗",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_K09.json",
+				"gml_id" : "hourlyRainfall.28"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.2246166, 22.31861151 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF030",
+				"automaticWeatherStation_en" : "Kwun Tong",
+				"automaticWeatherStation_sc" : "观塘",
+				"automaticWeatherStation_uc" : "觀塘",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_K03.json",
+				"gml_id" : "hourlyRainfall.29"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.23611111, 22.28166667 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF031",
+				"automaticWeatherStation_en" : "Shau Kei Wan",
+				"automaticWeatherStation_sc" : "筲箕湾",
+				"automaticWeatherStation_uc" : "筲箕灣",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF026.json",
+				"gml_id" : "hourlyRainfall.30"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.18361111, 22.27055556 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF032",
+				"automaticWeatherStation_en" : "Happy Valley",
+				"automaticWeatherStation_sc" : "跑马地",
+				"automaticWeatherStation_uc" : "跑馬地",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF027.json",
+				"gml_id" : "hourlyRainfall.31"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.155, 22.26416667 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF033",
+				"automaticWeatherStation_en" : "The Peak",
+				"automaticWeatherStation_sc" : "山顶",
+				"automaticWeatherStation_uc" : "山頂",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_RF028.json",
+				"gml_id" : "hourlyRainfall.32"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.1640786, 22.27173028 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF034",
+				"automaticWeatherStation_en" : "Magazine Gap",
+				"automaticWeatherStation_sc" : "马己仙峡",
+				"automaticWeatherStation_uc" : "馬己仙峽",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_H17.json",
+				"gml_id" : "hourlyRainfall.33"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.2156599, 22.21557006 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF035",
+				"automaticWeatherStation_en" : "Stanley",
+				"automaticWeatherStation_sc" : "赤柱",
+				"automaticWeatherStation_uc" : "赤柱",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_H15.json",
+				"gml_id" : "hourlyRainfall.34"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 114.1735589, 22.25126785 ]
+			},
+			"properties" : {
+				"automaticWeatherStationID" : "RF036",
+				"automaticWeatherStation_en" : "Wong Chuk Hang",
+				"automaticWeatherStation_sc" : "黄竹坑",
+				"automaticWeatherStation_uc" : "黄竹坑",
+				"data_url" : "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_H24.json",
+				"gml_id" : "hourlyRainfall.35"
+			}
+		}
+	]
+}
