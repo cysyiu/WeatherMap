@@ -57,10 +57,11 @@ jobs:
             "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_H15.json"
             "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/rf_hourly_H24.json"
           )
-          for i in "${!urls[@]}"; do
-            echo "Fetching ${urls[$i]}"
-            curl -s -o Data/Rainfall_data/rf_hourly_${i}.json "${urls[$i]}"
-          done
+          for url in "${urls[@]}"; do
+              filename=$(basename "$url")
+              echo "Fetching $filename"
+              curl -s -o Data/Rainfall_data/"$filename" "$url"
+            done
 
       - name: Update GeoJSON to point to local json filess
         run: |
