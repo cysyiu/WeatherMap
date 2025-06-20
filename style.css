@@ -20,7 +20,7 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     padding: 15px;
     border-radius: 10px;
-    border: 1px solid #cccccc;
+    border: 1px solid #ccc;
     bottom: 12px;
     left: -50px;
     min-width: 180px;
@@ -44,7 +44,7 @@
 }
 
 .ol-popup:before {
-    border-top-color: #cccccc;
+    border-top-color: #ccc;
     border-width: 11px;
     left: 48px;
     margin-left: -11px;
@@ -80,15 +80,25 @@
 .warning-message-bar {
     position: absolute;
     top: 0;
-    left: 50px;
-    right: 150px;
+    left: 300px;
+    right: 350px;
     background-color: rgba(255, 0, 0, 0.8);
     color: white;
     padding: 5px 10px;
     font-size: 14px;
     z-index: 5000;
-    overflow-x: auto;
+    overflow: hidden;
     white-space: nowrap;
+}
+
+.warning-message-text {
+    display: inline-block;
+    animation: scroll-right linear infinite;
+}
+
+@keyframes scroll-right {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
 }
 
 .weather-box {
