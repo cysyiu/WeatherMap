@@ -48,10 +48,11 @@ jobs:
             "https://data.weather.gov.hk/weatherAPI/hko_data/csdi/dataset/latest_1min_humidity_csdi_25.csv"
 
           )
-          for i in "${!urls[@]}"; do
-            echo "Fetching ${urls[$i]}"
-            curl -s -o Data/RH_data/latest_1min_humidity_csdi_${i}.csv "${urls[$i]}"
-          done
+          for url in "${urls[@]}"; do
+              filename=$(basename "$url")
+              echo "Fetching $filename"
+              curl -s -o Data/RH_data/"$filename" "$url"
+            done
 
       - name: Update GeoJSON to point to local CSV files
         run: |
