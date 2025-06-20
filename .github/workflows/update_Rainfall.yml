@@ -1,4 +1,4 @@
-name: Update Rain Data
+name: Update Rainfall Data
 
 on:
   schedule:
@@ -14,8 +14,8 @@ jobs:
         with:
           fetch-depth: 0   # Fetch full history to avoid conflicts
 
-      - name: Create temperature data folder if not exists
-        run: mkdir -p Data/Rain_data
+      - name: Create rainfall data folder if not exists
+        run: mkdir -p Data/Rainfall_data
 
       - name: Update JSON files
         run: |
@@ -59,12 +59,12 @@ jobs:
           )
           for i in "${!urls[@]}"; do
             echo "Fetching ${urls[$i]}"
-            curl -s -o Data/Rain_data/rf_hourly_${i}.json "${urls[$i]}"
+            curl -s -o Data/Rainfall_data/rf_hourly_${i}.json "${urls[$i]}"
           done
 
       - name: Update GeoJSON to point to local json filess
         run: |
-          python Python/rain_update.py
+          python Python/rainfall_update.py
       
       - name: Commit and push changes
         env:
@@ -74,7 +74,7 @@ jobs:
           git config --global user.email "actions@github.com"
           # Stage all changes (both the JSON files and any others, like the updated GeoJSON)
           git add -A
-          git commit -m "Auto-update Rain JSON data" || echo "No changes to commit"
+          git commit -m "Auto-update Rainfall JSON data" || echo "No changes to commit"
           # Clean working directory: stash any unstaged changes (shouldn't be any, since we've added everything)
           git stash --include-untracked
           git pull --rebase
