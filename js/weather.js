@@ -176,7 +176,7 @@ async function addWeatherStationsLayer(weatherElement) {
                         lat: latlng.lat,
                         deg: 0,
                         speed: 0,
-                        pointRadius: 2,
+                        pointRadius: 5,
                         strokeLength: 20
                     });
                     return L.marker(latlng, { icon: icon });
@@ -198,7 +198,7 @@ async function addWeatherStationsLayer(weatherElement) {
                     lat: latlng.lat,
                     deg: degrees,
                     speed: speed_knots,
-                    pointRadius: 2,
+                    pointRadius: 5,
                     strokeLength: 20
                 });
                 return L.marker(latlng, { icon: icon });
