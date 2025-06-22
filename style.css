@@ -1,251 +1,174 @@
+/* Ensure map fills the viewport */
 #map {
-    height: 500px;
+    height: 100vh;
     width: 100%;
-    position: relative;
 }
 
-.ol-tooltip {
-    position: absolute;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 4px;
-    border-radius: 4px;
-    white-space: nowrap;
-    font-size: 12px;
-}
-
-.ol-popup {
-    position: absolute;
-    background-color: white;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    bottom: 12px;
-    left: -50px;
-    min-width: 180px;
-}
-
-.ol-popup:after, .ol-popup:before {
-    top: 100%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-}
-
-.ol-popup:after {
-    border-top-color: white;
-    border-width: 10px;
-    left: 48px;
-    margin-left: -10px;
-}
-
-.ol-popup:before {
-    border-top-color: #ccc;
-    border-width: 11px;
-    left: 48px;
-    margin-left: -11px;
-}
-
-.ol-popup-closer {
-    text-decoration: none;
-    position: absolute;
-    top: 2px;
-    right: 8px;
-}
-
-.ol-popup-closer:after {
-    content: "✖";
-}
-
-.ol-hover-popup {
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 5px 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    font: bold 14px Arial;
-    color: black;
-    text-align: center;
-    z-index: 1000;
-}
-
-.ol-hover-content {
-    white-space: nowrap;
-}
-
+/* Warning message bar */
 .warning-message-bar {
     position: absolute;
-    top: 0;
-    left: 300px;
-    right: 350px;
-    background-color: rgba(255, 0, 0, 0.8);
+    top: 10px;
+    left: 200px; /* Offset to clear Current Weather box (160px + 10px padding + 10px margin) */
+    right: 50px; /* Offset to clear zoom buttons (approx. 26px + 10px margin + buffer) */
+    background-color: rgba(0, 128, 0, 0.8);
     color: white;
-    padding: 5px 10px;
-    font-size: 14px;
-    z-index: 5000;
+    text-align: center;
+    z-index: 1001;
     overflow: hidden;
     white-space: nowrap;
+    padding: 10px 0;
 }
 
 .warning-message-text {
     display: inline-block;
-    animation: scroll-right linear infinite;
+    padding-left: 100%;
+    animation: scroll-left 20s linear infinite; /* Fixed speed: 20 seconds */
 }
 
-@keyframes scroll-right {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+@keyframes scroll-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
 }
 
+/* Weather box (Current Weather panel) */
 .weather-box {
     position: absolute;
     top: 10px;
-    right: 10px;
-    background-color: white;
-    padding: 12px 15px;
+    left: 10px; /* Top-left */
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px;
     border-radius: 5px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    font-size: 14px;
     z-index: 1000;
+    text-align: center; /* Center-align content */
+    width: 160px; /* Fixed width */
 }
 
 .weather-title {
     font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.weather-divider {
-    border: 0;
-    height: 1px;
-    background-color: #ccc;
-    margin: 8px 0;
-}
-
-.weather-time {
-    font-family: monospace;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .weather-icon {
-    display: block;
     width: 50px;
     height: 50px;
-    margin: 10px auto;
+    display: block;
+    margin: 0 auto; /* Center icon */
 }
 
+.weather-divider {
+    margin: 5px 0;
+}
+
+.weather-time {
+    font-size: 12px;
+}
+
+/* Weather forecast box */
 .weather-forecast-box {
     position: absolute;
-    bottom: 10px;
+    bottom: 20px;
     right: 10px;
-    background-color: white;
-    padding: 12px 15px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px;
     border-radius: 5px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    font-size: 14px;
     z-index: 1000;
-    text-align: left;
 }
 
 .weather-forecast-title {
     font-weight: bold;
-    margin-bottom: 5px;
 }
 
 .weather-forecast-list {
     list-style: none;
     padding: 0;
-    margin: 0;
 }
 
 .weather-forecast-item {
-    display: grid;
-    grid-template-columns: 80px 40px 80px;
+    display: flex;
     align-items: center;
-    margin-bottom: 5px;
+    margin: 5px 0;
 }
 
 .forecast-date {
-    font-weight: bold;
-    text-align: left;
+    width: 60px;
 }
 
 .forecast-icon {
     width: 30px;
     height: 30px;
+    margin: 0 10px;
 }
 
 .forecast-temps {
-    text-align: right;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .toggle-button {
     position: absolute;
-    bottom: 0px;
-    right: 0px;
-    z-index: 1000;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    bottom: 20px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 3px;
     cursor: pointer;
+    z-index: 1001;
 }
 
+/* Weather selector */
 .weather-selector {
     position: absolute;
-    bottom: 10px;
+    bottom: 10px; /* Bottom-left */
     left: 10px;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.9);
     padding: 10px;
     border-radius: 5px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     z-index: 1000;
 }
 
 .weather-selector-title {
     font-weight: bold;
-    font-size: 14px;
-    margin-bottom: 5px;
 }
 
 .weather-selector select {
-    padding: 5px;
-    font-size: 14px;
-    border: 1px solid #ccc;
+    margin-top: 5px;
+    width: 100%;
+}
+
+/* Leaflet control customizations */
+.leaflet-control-zoom {
+    margin-top: 10px !important;
+    margin-right: 10px !important;
+}
+
+.leaflet-control-locate {
+    margin-top: 5px !important; /* Spacing below zoom */
+    margin-right: 10px !important;
+}
+
+.leaflet-control-home {
+    margin-top: 4px !important; /* Spacing below locate */
+    margin-right: 10px !important;
+    width: 30px;
+    height: 30px;
+    background: white;
+    border: 2px solid rgb(163 190 204);
     border-radius: 3px;
     cursor: pointer;
+    background-image: url('img/home.png');
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
-.ol-control {
-    top: 0.5em !important;
-    left: 0.5em !important;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25em;
+.leaflet-control-locate a {
+
+    width: 26px;
+    height: 26px;
+    display: block;
 }
 
-.ol-zoom-in, .ol-zoom-out, .ol-geocoder, .ol-home {
-    background-color: rgba(255,255,255,0.4) !important;
-    border-radius: 2px !important;
-    width: 24px !important;
-    height: 24px !important;
-    padding: 2px !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: none !important;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.65) !important;
-}
-
-.ol-zoom-in:hover, .ol-zoom-out:hover, .ol-geocoder:hover, .ol-home:hover {
-    background-color: rgba(255,255,255,0.6) !important;
+/* Tooltip styling for readability */
+.leaflet-tooltip {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid black;
+    font-weight: bold;
 }
