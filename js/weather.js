@@ -8,6 +8,32 @@ const COMPASS_TO_DEGREES = {
     'Variable': null // Handle separately
 };
 
+// Warning code to icon mapping
+const WARNING_ICONS = {
+    'WFIREY': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/firey.gif',
+    'WFIRER': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/firer.gif',
+    'WFROST': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/frost.gif',
+    'WHOT': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/vhot.gif',
+    'WCOLD': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/cold.gif',
+    'WMSGNL': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/sms.gif',
+    'WRAINA': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/raina.gif',
+    'WRAINR': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/rainr.gif',
+    'WRAINB': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/rainb.gif',
+    'WFNTSA': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/ntfl.gif',
+    'WL': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/landslip.gif',
+    'TC1': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/tc1.gif',
+    'TC3': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/tc3.gif',
+    'TC8NE': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/tc8ne.gif',
+    'TC8SE': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/tc8b.gif',
+    'TC8NW': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/tc8d.gif',
+    'TC8SW': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/tc8c.gif',
+    'TC9': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/tc9.gif',
+    'TC10': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/tc10.gif',
+    'WTMW': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/tsunami-warn.gif',
+    'WTS': 'https://www.hko.gov.hk/en/wxinfo/dailywx/images/ts.gif',
+    'CANCEL': null
+};
+
 async function fetchWeatherData() {
     try {
         const response = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en');
@@ -28,6 +54,19 @@ async function fetchWeatherForecast() {
         return await response.json();
     } catch (error) {
         console.error('Failed to fetch weather forecast:', error);
+        return {};
+    }
+}
+
+async function fetchWarningData() {
+    try {
+        const response = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=en');
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        const data = await response.json();
+        console.log('Warning API Response:', data);
+        return data;
+    } catch (error) {
+        console.error('Failed to fetch warning data:', error);
         return {};
     }
 }
@@ -267,7 +306,6 @@ function createWarningMessageBar() {
             const message = weatherData.warningMessage || 'There is no weather warning in force.';
             messageSpan.textContent = message;
             warningBar.style.backgroundColor = weatherData.warningMessage ? 'rgba(255, 0, 0, 0.8)' : 'rgba(0, 128, 0, 0.8)';
-            // Fixed scrolling speed defined in CSS
         } catch (error) {
             console.error('Failed to fetch warning message:', error);
             messageSpan.textContent = 'Failed to fetch weather data.';
@@ -289,16 +327,36 @@ function createWeatherBox() {
     weatherIcon.className = 'weather-icon';
     const divider = document.createElement('hr');
     divider.className = 'weather-divider';
+    const warningIconsContainer = document.createElement('div');
+    warningIconsContainer.className = 'warning-icons';
     const timeUpdate = document.createElement('div');
     timeUpdate.className = 'weather-time';
     
     async function updateWeather() {
         try {
             const weatherData = await fetchWeatherData();
+            const warningData = await fetchWarningData();
+            
+            // Update weather icon
             const iconValue = weatherData.icon && weatherData.icon[0];
             if (iconValue) {
                 weatherIcon.src = `https://www.hko.gov.hk/images/HKOWxIconOutline/pic${iconValue}.png`;
             }
+            
+            // Update warning icons
+            warningIconsContainer.innerHTML = ''; // Clear previous icons
+            if (warningData && Object.keys(warningData).length > 0) {
+                Object.keys(warningData).forEach(code => {
+                    if (WARNING_ICONS[code] && code !== 'CANCEL') {
+                        const warningIcon = document.createElement('img');
+                        warningIcon.src = WARNING_ICONS[code];
+                        warningIcon.className = 'warning-icon';
+                        warningIconsContainer.appendChild(warningIcon);
+                    }
+                });
+            }
+            
+            // Update time
             if (weatherData.temperature && weatherData.temperature.recordTime) {
                 const date = new Date(weatherData.temperature.recordTime);
                 const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true };
@@ -315,6 +373,7 @@ function createWeatherBox() {
     weatherBox.appendChild(title);
     weatherBox.appendChild(weatherIcon);
     weatherBox.appendChild(divider);
+    weatherBox.appendChild(warningIconsContainer);
     weatherBox.appendChild(timeUpdate);
     document.getElementById('map').appendChild(weatherBox);
 }
