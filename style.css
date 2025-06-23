@@ -39,7 +39,7 @@
     padding: 10px;
     border-radius: 5px;
     z-index: 1000;
-    text-align: center; /* Center-align content */
+    text-align: center;
     width: 160px; /* Fixed width */
 }
 
@@ -53,6 +53,19 @@
     height: 50px;
     display: block;
     margin: 0 auto; /* Center icon */
+}
+
+.warning-icons {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin: 5px 0;
+}
+
+.warning-icon {
+    width: 30px;
+    height: 30px;
+    margin: 2px;
 }
 
 .weather-divider {
@@ -160,7 +173,6 @@
 }
 
 .leaflet-control-locate a {
-
     width: 26px;
     height: 26px;
     display: block;
