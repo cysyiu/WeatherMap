@@ -346,11 +346,13 @@ function createWeatherBox() {
             // Update warning icons
             warningIconsContainer.innerHTML = ''; // Clear previous icons
             if (warningData && Object.keys(warningData).length > 0) {
-                Object.keys(warningData).forEach(code => {
+                Object.entries(warningData).forEach(([key, warning]) => {
+                    const code = warning.code; // Use the 'code' field from the warning object
                     if (WARNING_ICONS[code] && code !== 'CANCEL') {
                         const warningIcon = document.createElement('img');
                         warningIcon.src = WARNING_ICONS[code];
                         warningIcon.className = 'warning-icon';
+                        warningIcon.title = warning.name; // Add tooltip with warning name
                         warningIconsContainer.appendChild(warningIcon);
                     }
                 });
