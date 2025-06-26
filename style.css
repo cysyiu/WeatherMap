@@ -55,6 +55,22 @@
     margin: 0 auto;
 }
 
+/* Warning icons container */
+.warning-icons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    margin: 5px 0;
+}
+
+/* Individual warning icons */
+.warning-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
 .weather-divider {
     margin: 5px 0;
 }
