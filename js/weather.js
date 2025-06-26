@@ -341,21 +341,33 @@ function createWeatherBox() {
             const iconValue = weatherData.icon && weatherData.icon[0];
             if (iconValue) {
                 weatherIcon.src = `https://www.hko.gov.hk/images/HKOWxIconOutline/pic${iconValue}.png`;
+            } else {
+                console.warn('No weather icon value found in weatherData');
+                weatherIcon.src = ''; // Clear icon if no value
             }
             
             // Update warning icons
             warningIconsContainer.innerHTML = ''; // Clear previous icons
+            console.log('Warning data received:', warningData); // Debug log
             if (warningData && Object.keys(warningData).length > 0) {
                 Object.entries(warningData).forEach(([key, warning]) => {
-                    const code = warning.code; // Use the 'code' field from the warning object
+                    const code = warning.code || key; // Fallback to key if code is missing
+                    console.log(`Processing warning: key=${key}, code=${code}, name=${warning.name}`); // Debug log
                     if (WARNING_ICONS[code] && code !== 'CANCEL') {
                         const warningIcon = document.createElement('img');
                         warningIcon.src = WARNING_ICONS[code];
                         warningIcon.className = 'warning-icon';
-                        warningIcon.title = warning.name; // Add tooltip with warning name
+                        warningIcon.title = warning.name || code; // Tooltip with warning name or code
+                        warningIcon.onerror = () => {
+                            console.error(`Failed to load warning icon for ${code}: ${WARNING_ICONS[code]}`);
+                        }; // Log image loading errors
                         warningIconsContainer.appendChild(warningIcon);
+                    } else {
+                        console.warn(`No icon found for code=${code} or code is CANCEL`);
                     }
                 });
+            } else {
+                console.log('No warnings in warningData');
             }
             
             // Update time
@@ -363,6 +375,8 @@ function createWeatherBox() {
                 const date = new Date(weatherData.temperature.recordTime);
                 const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true };
                 timeUpdate.textContent = `Updated: ${date.toLocaleString('en-US', options).replace(',', '')}`;
+            } else {
+                console.warn('No temperature recordTime in weatherData');
             }
         } catch (error) {
             console.error('Failed to update weather box:', error);
@@ -379,7 +393,6 @@ function createWeatherBox() {
     weatherBox.appendChild(timeUpdate);
     document.getElementById('map').appendChild(weatherBox);
 }
-
 function createWeatherForecast() {
     const weatherFBox = document.createElement('div');
     weatherFBox.className = 'weather-forecast-box';
