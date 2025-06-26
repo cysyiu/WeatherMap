@@ -41,6 +41,7 @@
     z-index: 1000;
     text-align: center;
     width: 160px;
+    overflow: visible; /* Allow weather icon to exceed the box */
 }
 
 .weather-title {
@@ -49,10 +50,10 @@
 }
 
 .weather-icon {
-    width: 50px;
-    height: 50px;
+    width: 70px; /* Increased size to exceed weather box */
+    height: 70px;
     display: block;
-    margin: 0 auto;
+    margin: -10px auto; /* Negative margins to allow overflow */
 }
 
 /* Warning icons container */
@@ -207,6 +208,14 @@
         z-index: 1003;
         border-radius: 0;
         background-color: rgba(255, 255, 255, 0.95);
+        overflow: visible; /* Allow weather icon to exceed the box */
+    }
+
+    /* Weather icon for mobile */
+    .weather-icon {
+        width: 60px; /* Slightly smaller than desktop but still exceeds box */
+        height: 60px;
+        margin: -8px 5px; /* Adjusted negative margins for mobile */
     }
 
     /* Warning message bar below weather box */
@@ -319,6 +328,7 @@
     .weather-selector select {
         width: 100%; /* Ensure the select element takes full width of its container */
     }
+
     /* Leaflet control customizations */
     .leaflet-control-zoom {
         margin-top: 5px !important;
