@@ -2,7 +2,7 @@ const HONG_KONG_CENTER = [22.3964, 114.1095]; // [lat, lng] for Leaflet
 
 // Map compass points to degrees (clockwise from North = 0°)
 const COMPASS_TO_DEGREES = {
-    'North': 0, 'Northeast': 45, 'East': 90, 'Southeast': 135,
+    'North': 360, 'Northeast': 45, 'East': 90, 'Southeast': 135,
     'South': 180, 'Southwest': 225, 'West': 270, 'Northwest': 315,
     'Calm': 0, // For 0-speed wind barb
     'Variable': null // Handle separately
