@@ -393,6 +393,20 @@ function createWeatherBox() {
     weatherBox.appendChild(timeUpdate);
     document.getElementById('map').appendChild(weatherBox);
 }
+
+function updateMobileLayout() {
+    if (window.innerWidth <= 600) { // Match the media query breakpoint
+        const weatherBox = document.querySelector('.weather-box');
+        const warningBar = document.querySelector('.warning-message-bar');
+        const mapContainer = document.getElementById('map');
+        if (weatherBox && warningBar && mapContainer) {
+            const weatherBoxHeight = weatherBox.offsetHeight;
+            warningBar.style.top = `${weatherBoxHeight}px`;
+            mapContainer.style.top = `${weatherBoxHeight + warningBar.offsetHeight}px`;
+        }
+    }
+}
+
 function createWeatherForecast() {
     const weatherFBox = document.createElement('div');
     weatherFBox.className = 'weather-forecast-box';
@@ -402,6 +416,14 @@ function createWeatherForecast() {
     const toggleButton = document.createElement('div');
     toggleButton.className = 'toggle-button';
     toggleButton.textContent = '>';
+    
+    // Prevent touch events from propagating to the map
+    weatherFBox.addEventListener('touchstart', (e) => {
+        e.stopPropagation();
+    }, { passive: false });
+    weatherFBox.addEventListener('touchmove', (e) => {
+        e.stopPropagation();
+    }, { passive: false });
     
     async function updateWeatherForecast() {
         try {
@@ -428,6 +450,8 @@ function createWeatherForecast() {
             weatherFBox.innerHTML = '';
             weatherFBox.appendChild(title);
             weatherFBox.appendChild(forecastList);
+            // Update layout after updating forecast
+            updateMobileLayout();
         } catch (error) {
             console.error('Failed to update forecast:', error);
         }
@@ -451,12 +475,19 @@ function createWeatherForecast() {
             weatherFBox.style.display = 'none';
             toggleButton.textContent = '<';
         }
+        // Update layout when toggling
+        updateMobileLayout();
     });
     
     updateWeatherForecast();
     document.getElementById('map').appendChild(weatherFBox);
     document.getElementById('map').appendChild(toggleButton);
+    
+    // Initial layout update
+    updateMobileLayout();
 }
+
+window.addEventListener('resize', updateMobileLayout);
 
 function createWeatherSelector() {
     const selectorDiv = document.createElement('div');
