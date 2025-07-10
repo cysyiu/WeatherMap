@@ -268,7 +268,7 @@ async function addWeatherStationsLayer(weatherElement) {
                     if (weatherElement === 'wind') {
                         const direction = feature.properties.direction;
                         const speed_kmh = feature.properties.speed_kmh;
-                        if (direction === 'Variable') return `${stationName}: Variable direction`;
+                        if (direction === 'Variable') return `${stationName}: Variable direction, ${speed_kmh.toFixed(1)} km/h`;
                         if (direction === 'Calm') return `${stationName}: Calm`;
                         if (speed_kmh === null || isNaN(speed_kmh)) return `${stationName}: Missing speed`;
                         return `${stationName}: ${direction}, ${speed_kmh.toFixed(1)} km/h`;
