@@ -2,14 +2,16 @@
 #map {
     height: 97vh;
     width: 100%;
+    position: relative;
+    z-index: 1;
 }
 
 /* Warning message bar */
 .warning-message-bar {
     position: absolute;
     top: 10px;
-    left: 200px; /* Offset to clear Current Weather box */
-    right: 50px; /* Offset to clear zoom buttons */
+    left: 200px;
+    right: 50px;
     background-color: rgba(0, 128, 0, 0.8);
     color: white;
     text-align: center;
@@ -26,7 +28,7 @@
 }
 
 @keyframes scroll-left {
-    0% { transform: toX(0); }
+    0% { transform: translateX(0); }
     100% { transform: translateX(-100%); }
 }
 
@@ -41,19 +43,19 @@
     z-index: 1000;
     text-align: center;
     width: 160px;
-    overflow: visible; /* Allow weather icon to exceed the box */
+    overflow: visible;
 }
 
 .weather-title {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .weather-icon {
-    width: 70px; /* Increased size to exceed weather box */
-    height: 70px;
+    width: 60px;
+    height: 60px;
     display: block;
-    margin: -10px auto; /* Negative margins to allow overflow */
+    margin: auto;
 }
 
 /* Warning icons container */
@@ -91,8 +93,14 @@
     z-index: 1000;
 }
 
+.weather-forecast-box.collapsed .weather-forecast-list {
+    display: none;
+}
+
 .weather-forecast-title {
     font-weight: bold;
+    padding-bottom: 5px;
+    cursor: pointer;
 }
 
 .weather-forecast-list {
@@ -118,16 +126,6 @@
 
 .forecast-temps {
     font-size: 12px;
-}
-
-.toggle-button {
-    position: absolute;
-    bottom: 20px;
-    right: 10px;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 3px;
-    cursor: pointer;
-    z-index: 1001;
 }
 
 /* Weather selector */
@@ -191,7 +189,6 @@
 
 /* Responsive design for mobile devices */
 @media (max-width: 600px) {
-    /* Weather box fixed at top */
     .weather-box {
         position: fixed;
         top: 0;
@@ -208,20 +205,18 @@
         z-index: 1003;
         border-radius: 0;
         background-color: rgba(255, 255, 255, 0.95);
-        overflow: visible; /* Allow weather icon to exceed the box */
+        overflow: visible;
     }
 
-    /* Weather icon for mobile */
     .weather-icon {
-        width: 60px; /* Slightly smaller than desktop but still exceeds box */
+        width: 60px;
         height: 60px;
-        margin: -8px 5px; /* Adjusted negative margins for mobile */
+        margin: -8px 5px;
     }
 
-    /* Warning message bar below weather box */
     .warning-message-bar {
         position: fixed;
-        top: 80px; /* Adjusted dynamically in JS to account for weather-box height */
+        top: 80px;
         left: 0;
         right: 0;
         font-size: 11px;
@@ -234,22 +229,21 @@
 
     .warning-message-text {
         padding-left: 0;
-        animation: none; /* Disable scrolling on mobile */
+        animation: none;
     }
 
-    /* Map container positioned below warning message and above forecast */
     #map {
         position: fixed;
-        top: 130px; /* Adjusted dynamically in JS based on weather-box and warning-message-bar */
-        bottom: 175px; /* Based on weather-forecast-box height */
+        top: 130px;
+        bottom: 30px;
         left: 0;
         right: 0;
-        height: auto !important; /* Allow height to be determined by top/bottom */
+        height: auto !important;
         width: 100%;
         z-index: 1;
+        min-height: 200px;
     }
 
-    /* Weather forecast fixed at bottom, solid background */
     .weather-forecast-box {
         position: fixed;
         bottom: 0;
@@ -258,29 +252,32 @@
         width: 100%;
         max-width: none;
         border-radius: 0;
-        padding: 10px 0;
+        padding: 0;
         font-size: 14px;
-        background-color: rgba(255, 255, 255, 1); /* Solid background */
+        background-color: rgba(255, 255, 255, 1);
         box-sizing: border-box;
         z-index: 1003;
         box-shadow: 0 -2px 5px rgba(0,0,0,0.15);
-        overflow-x: auto; /* Enable horizontal scrolling */
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-        touch-action: pan-x; /* Allow horizontal scrolling, block vertical */
+    }
+
+    .weather-forecast-box.collapsed .weather-forecast-list {
+        display: none;
     }
 
     .weather-forecast-title {
-        font-weight: bold;
-        padding: 0 0 0 15px;
+        padding: 10px;
+        border-top: 1px solid #ccc;
+        box-shadow: 0 -2px 5px rgba(0,0,0,0.15);
     }
 
     .weather-forecast-list {
-        list-style: none;
         padding: 0 15px;
         display: flex;
         flex-wrap: nowrap;
         white-space: nowrap;
-        overflow-x: visible;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x;
     }
 
     .weather-forecast-item {
@@ -309,12 +306,10 @@
         font-size: 12px;
     }
 
-    /* Weather selector moved to bottom right corner of the map */
     .weather-selector {
         position: fixed;
-        bottom: 200px; /* Just above forecast box */
-        right: 10px;
-        left: auto;
+        bottom: 40px;
+        left: 10px;
         width: auto;
         max-width: 150px;
         padding: 8px 10px;
@@ -329,7 +324,6 @@
         width: 100%;
     }
 
-    /* Leaflet control customizations */
     .leaflet-control-zoom {
         margin-top: 5px !important;
         margin-right: 5px !important;
@@ -345,7 +339,6 @@
         margin-right: 5px !important;
     }
 
-    /* Tooltip styling for readability */
     .leaflet-tooltip {
         font-size: 12px;
     }
