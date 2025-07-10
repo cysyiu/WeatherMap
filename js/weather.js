@@ -1,6 +1,5 @@
-const HONG_KONG_CENTER = [22.3964, 114.1095]; // [lat, lng] for Leaflet
-
 // Map compass points to degrees (clockwise from North = 0°)
+const HONG_KONG_CENTER = [22.3964, 114.1095]; // [lat, lng] for Leaflet
 const COMPASS_TO_DEGREES = {
     'North': 360, 'Northeast': 45, 'East': 90, 'Southeast': 135,
     'South': 180, 'Southwest': 225, 'West': 270, 'Northwest': 315,
@@ -39,7 +38,7 @@ async function fetchWeatherData() {
         const response = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en');
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const data = await response.json();
-        console.log('Weather API Response:', data);
+        //console.log('Weather API Response:', data);
         return data;
     } catch (error) {
         console.error('Failed to fetch weather data:', error);
@@ -63,7 +62,7 @@ async function fetchWarningData() {
         const response = await fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=en');
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const data = await response.json();
-        console.log('Warning API Response:', data);
+        //console.log('Warning API Response:', data);
         return data;
     } catch (error) {
         console.error('Failed to fetch warning data:', error);
@@ -102,8 +101,8 @@ async function fetchWeatherStations(weatherElement) {
                         const data = lines[1].split(',').map(value => value.trim());
                         feature.properties.direction = data[dirIndex];
                         feature.properties.speed_kmh = parseFloat(data[speedIndex]);
-                        feature.properties.speed_knots = isNaN(feature.properties.speed_kmh) ? null : feature.properties.speed_kmh / 1.852; // Convert km/h to knots
-                        console.log(`Station ${feature.properties.AutomaticWeatherStation_en}: direction=${feature.properties.direction}, speed_knots=${feature.properties.speed_knots}`);
+                        feature.properties.speed_knots = isNaN(feature.properties.speed_kmh) ? null : feature.properties.speed_kmh / 1.852;
+                        //console.log(`Station ${feature.properties.AutomaticWeatherStation_en}: direction=${feature.properties.direction}, speed_knots=${feature.properties.speed_knots}`);
                     } else {
                         let valueIndex;
                         if (weatherElement === 'humidity') valueIndex = headers.indexOf('Relative Humidity(percent)');
@@ -128,10 +127,10 @@ async function fetchWeatherStations(weatherElement) {
         }));
         geojson.features = features.filter(feature => 
             weatherElement === 'wind' ? 
-            (feature.properties.direction !== null) : // Allow 'Calm', 'Variable'
+            (feature.properties.direction !== null) : 
             feature.properties.value !== null && !isNaN(feature.properties.value)
         );
-        console.log(`Filtered ${weatherElement} features:`, geojson.features.length, geojson.features);
+        //console.log(`Filtered ${weatherElement} features:`, geojson.features.length, geojson.features);
         return geojson;
     } catch (error) {
         console.error(`Failed to fetch ${weatherElement} stations:`, error);
@@ -140,9 +139,9 @@ async function fetchWeatherStations(weatherElement) {
 }
 
 const map = L.map('map', {
-    zoomControl: true // Ensure default zoom control is enabled
+    zoomControl: true
 }).setView(HONG_KONG_CENTER, 11);
-map.zoomControl.setPosition('topright'); // Place zoom control at top-right
+map.zoomControl.setPosition('topright');
 L.tileLayer('https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/wgs84/{z}/{x}/{y}.png', {
     attribution: '© Hong Kong Observatory',
     maxZoom: 18
@@ -153,9 +152,8 @@ L.tileLayer('https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/en/wgs84/{
 
 let stationLayer;
 
-// Check if Leaflet.windbarb is loaded
 if (typeof L.WindBarb === 'undefined') {
-    console.error('Leaflet.windbarb plugin is not loaded. Please ensure js/leaflet-windbarb.js is included and accessible.');
+    console.error('Leaflet.windbarb plugin is not loaded. Please ensure js/leaflet-windbarb.js is included.');
 }
 
 async function addWeatherStationsLayer(weatherElement) {
@@ -163,17 +161,15 @@ async function addWeatherStationsLayer(weatherElement) {
         map.removeLayer(stationLayer);
     }
     const stationsGeoJson = await fetchWeatherStations(weatherElement);
-    console.log(`Adding ${weatherElement} layer with ${stationsGeoJson.features.length} features`);
+    //console.log(`Adding ${weatherElement} layer with ${stationsGeoJson.features.length} features`);
     stationLayer = L.geoJSON(stationsGeoJson, {
         pointToLayer: (feature, latlng) => {
             const stationName = feature.properties.AutomaticWeatherStation_en;
             if (weatherElement === 'wind') {
                 const direction = feature.properties.direction;
                 const speed_knots = feature.properties.speed_knots;
-                
-                // Handle NaN speed
                 if (speed_knots === null || isNaN(speed_knots)) {
-                    console.log(`NaN speed for ${stationName}, showing 'M'`);
+                    //console.log(`NaN speed for ${stationName}, showing 'M'`);
                     return L.marker(latlng, {
                         icon: L.divIcon({
                             html: '<div style="font-size: 14px; font-weight: bold; color: black; text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;">M</div>',
@@ -183,10 +179,8 @@ async function addWeatherStationsLayer(weatherElement) {
                         })
                     });
                 }
-                
-                // Handle Variable direction
                 if (direction === 'Variable') {
-                    console.log(`Variable direction for ${stationName}, showing 'VRB'`);
+                    //console.log(`Variable direction for ${stationName}, showing 'VRB'`);
                     return L.marker(latlng, {
                         icon: L.divIcon({
                             html: '<div style="font-size: 14px; font-weight: bold; color: black; text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;">VRB</div>',
@@ -196,8 +190,6 @@ async function addWeatherStationsLayer(weatherElement) {
                         })
                     });
                 }
-                
-                // Check if WindBarb is available
                 if (typeof L.WindBarb === 'undefined') {
                     console.warn(`WindBarb plugin not available for ${stationName}, using fallback marker`);
                     return L.circleMarker(latlng, {
@@ -207,10 +199,8 @@ async function addWeatherStationsLayer(weatherElement) {
                         stroke: false
                     });
                 }
-                
-                // Handle Calm direction
                 if (direction === 'Calm') {
-                    console.log(`Calm direction for ${stationName}, showing 0-speed wind barb`);
+                    //console.log(`Calm direction for ${stationName}, showing 0-speed wind barb`);
                     const icon = L.WindBarb.icon({
                         lat: latlng.lat,
                         deg: 0,
@@ -220,8 +210,6 @@ async function addWeatherStationsLayer(weatherElement) {
                     });
                     return L.marker(latlng, { icon: icon });
                 }
-                
-                // Normal wind barb
                 if (!COMPASS_TO_DEGREES[direction] && direction !== 'Calm') {
                     console.warn(`Invalid wind direction for ${stationName}: ${direction}`);
                     return L.circleMarker(latlng, {
@@ -232,7 +220,7 @@ async function addWeatherStationsLayer(weatherElement) {
                     });
                 }
                 const degrees = COMPASS_TO_DEGREES[direction];
-                console.log(`Rendering wind barb for ${stationName}: speed_knots=${speed_knots}, direction=${direction}`);
+                //console.log(`Rendering wind barb for ${stationName}: speed_knots=${speed_knots}, direction=${direction}`);
                 const icon = L.WindBarb.icon({
                     lat: latlng.lat,
                     deg: degrees,
@@ -242,7 +230,6 @@ async function addWeatherStationsLayer(weatherElement) {
                 });
                 return L.marker(latlng, { icon: icon });
             } else {
-                // Temperature, Humidity, Rainfall: Show only the reading
                 const value = feature.properties.value;
                 if (value === null || isNaN(value)) {
                     console.warn(`Invalid value for ${stationName}: ${value}`);
@@ -337,40 +324,37 @@ function createWeatherBox() {
             const weatherData = await fetchWeatherData();
             const warningData = await fetchWarningData();
             
-            // Update weather icon
             const iconValue = weatherData.icon && weatherData.icon[0];
             if (iconValue) {
                 weatherIcon.src = `https://www.hko.gov.hk/images/HKOWxIconOutline/pic${iconValue}.png`;
             } else {
                 console.warn('No weather icon value found in weatherData');
-                weatherIcon.src = ''; // Clear icon if no value
+                weatherIcon.src = '';
             }
             
-            // Update warning icons
-            warningIconsContainer.innerHTML = ''; // Clear previous icons
-            console.log('Warning data received:', warningData); // Debug log
+            warningIconsContainer.innerHTML = '';
+            //console.log('Warning data received:', warningData);
             if (warningData && Object.keys(warningData).length > 0) {
                 Object.entries(warningData).forEach(([key, warning]) => {
-                    const code = warning.code || key; // Fallback to key if code is missing
-                    console.log(`Processing warning: key=${key}, code=${code}, name=${warning.name}`); // Debug log
+                    const code = warning.code || key;
+                    //console.log(`Processing warning: key=${key}, code=${code}, name=${warning.name}`);
                     if (WARNING_ICONS[code] && code !== 'CANCEL') {
                         const warningIcon = document.createElement('img');
                         warningIcon.src = WARNING_ICONS[code];
                         warningIcon.className = 'warning-icon';
-                        warningIcon.title = warning.name || code; // Tooltip with warning name or code
+                        warningIcon.title = warning.name || code;
                         warningIcon.onerror = () => {
                             console.error(`Failed to load warning icon for ${code}: ${WARNING_ICONS[code]}`);
-                        }; // Log image loading errors
+                        };
                         warningIconsContainer.appendChild(warningIcon);
                     } else {
                         console.warn(`No icon found for code=${code} or code is CANCEL`);
                     }
                 });
             } else {
-                console.log('No warnings in warningData');
+                //console.log('No warnings in warningData');
             }
             
-            // Update time
             if (weatherData.temperature && weatherData.temperature.recordTime) {
                 const date = new Date(weatherData.temperature.recordTime);
                 const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true };
@@ -394,17 +378,61 @@ function createWeatherBox() {
     document.getElementById('map').appendChild(weatherBox);
 }
 
-function updateMobileLayout() {
-    if (window.innerWidth <= 600) { // Match the media query breakpoint
-        const weatherBox = document.querySelector('.weather-box');
-        const warningBar = document.querySelector('.warning-message-bar');
-        const mapContainer = document.getElementById('map');
-        if (weatherBox && warningBar && mapContainer) {
-            const weatherBoxHeight = weatherBox.offsetHeight;
-            warningBar.style.top = `${weatherBoxHeight}px`;
-            mapContainer.style.top = `${weatherBoxHeight + warningBar.offsetHeight}px`;
-        }
+function updateLayout() {
+    const isMobile = window.innerWidth <= 600;
+    const weatherBox = document.querySelector('.weather-box');
+    const warningBar = document.querySelector('.warning-message-bar');
+    const mapContainer = document.getElementById('map');
+    const weatherFBox = document.querySelector('.weather-forecast-box');
+    const weatherFTitle = document.querySelector('.weather-forecast-title');
+    const weatherSelector = document.querySelector('.weather-selector');
+
+    if (!weatherBox || !warningBar || !mapContainer || !weatherFBox || !weatherFTitle || !weatherSelector) {
+        console.error('One or more elements not found:', { weatherBox, warningBar, mapContainer, weatherFBox, weatherFTitle, weatherSelector });
+        return;
     }
+
+    if (isMobile) {
+        const weatherBoxHeight = weatherBox.offsetHeight || 80;
+        const warningBarHeight = warningBar.offsetHeight || 40;
+        const weatherFTitleHeight = weatherFTitle.offsetHeight || 30;
+        const weatherFBoxHeight = weatherFBox.offsetHeight || 100;
+
+        warningBar.style.top = `${weatherBoxHeight}px`;
+        mapContainer.style.top = `${weatherBoxHeight + warningBarHeight}px`;
+        
+        if (weatherFBox.classList.contains('collapsed')) {
+            mapContainer.style.bottom = `${weatherFTitleHeight}px`;
+            weatherSelector.style.bottom = `${weatherFTitleHeight}px`;
+        } else {
+            mapContainer.style.bottom = `${weatherFBoxHeight}px`;
+            weatherSelector.style.bottom = `${weatherFBoxHeight}px`;
+        }
+
+        const mapHeight = window.innerHeight - (weatherBoxHeight + warningBarHeight + (weatherFBox.classList.contains('collapsed') ? weatherFTitleHeight : weatherFBoxHeight));
+        //console.log(`Mobile Map Layout: top=${weatherBoxHeight + warningBarHeight}px, bottom=${weatherFBox.classList.contains('collapsed') ? weatherFTitleHeight : weatherFBoxHeight}px, calculated height=${mapHeight}px`);
+        if (mapHeight <= 0) {
+            console.warn('Map height is non-positive, setting minimum height');
+            mapContainer.style.height = '200px';
+        } else {
+            mapContainer.style.height = 'auto';
+        }
+    } else {
+        const weatherFBoxHeight = weatherFBox.offsetHeight || 100;
+        const weatherFTitleHeight = weatherFTitle.offsetHeight || 30;
+        if (weatherFBox.classList.contains('collapsed')) {
+            mapContainer.style.bottom = `${weatherFTitleHeight}px`;
+        } else {
+            mapContainer.style.bottom = `${weatherFBoxHeight}px`;
+        }
+        mapContainer.style.top = '0';
+        mapContainer.style.height = '97vh';
+    }
+
+    setTimeout(() => {
+        map.invalidateSize();
+        //console.log('Map invalidated size');
+    }, 100);
 }
 
 function createWeatherForecast() {
@@ -413,15 +441,13 @@ function createWeatherForecast() {
     const title = document.createElement('div');
     title.className = 'weather-forecast-title';
     title.textContent = 'Weather Forecast';
-    const toggleButton = document.createElement('div');
-    toggleButton.className = 'toggle-button';
-    toggleButton.textContent = '>';
     
-    // Prevent touch events from propagating to the map
     weatherFBox.addEventListener('touchstart', (e) => {
+        if (e.target === title) return; // Allow clicks on title, prevent map interaction otherwise
         e.stopPropagation();
     }, { passive: false });
     weatherFBox.addEventListener('touchmove', (e) => {
+        if (e.target === title) return;
         e.stopPropagation();
     }, { passive: false });
     
@@ -450,8 +476,7 @@ function createWeatherForecast() {
             weatherFBox.innerHTML = '';
             weatherFBox.appendChild(title);
             weatherFBox.appendChild(forecastList);
-            // Update layout after updating forecast
-            updateMobileLayout();
+            updateLayout();
         } catch (error) {
             console.error('Failed to update forecast:', error);
         }
@@ -467,27 +492,24 @@ function createWeatherForecast() {
         return `${day}/${month}<span style="font-size: 12px;">(${dayOfWeek})</span>`;
     }
     
-    toggleButton.addEventListener('click', () => {
-        if (weatherFBox.style.display === 'none') {
-            weatherFBox.style.display = 'block';
-            toggleButton.textContent = '>';
+    title.addEventListener('click', () => {
+        if (weatherFBox.classList.contains('collapsed')) {
+            weatherFBox.classList.remove('collapsed');
         } else {
-            weatherFBox.style.display = 'none';
-            toggleButton.textContent = '<';
+            weatherFBox.classList.add('collapsed');
         }
-        // Update layout when toggling
-        updateMobileLayout();
+        updateLayout();
     });
+    
+    if (window.innerWidth <= 600) {
+        weatherFBox.classList.add('collapsed');
+    } else {
+        weatherFBox.classList.remove('collapsed');
+    }
     
     updateWeatherForecast();
     document.getElementById('map').appendChild(weatherFBox);
-    document.getElementById('map').appendChild(toggleButton);
-    
-    // Initial layout update
-    updateMobileLayout();
 }
-
-window.addEventListener('resize', updateMobileLayout);
 
 function createWeatherSelector() {
     const selectorDiv = document.createElement('div');
@@ -511,22 +533,20 @@ function createWeatherSelector() {
     document.getElementById('map').appendChild(selectorDiv);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const weatherElement = 'temperature';
-    addWeatherStationsLayer(weatherElement);
+    await addWeatherStationsLayer(weatherElement);
     createWarningMessageBar();
     createWeatherBox();
     createWeatherForecast();
     createWeatherSelector();
 
-    // Add geolocation control below zoom
     L.control.locate({
         position: 'topright',
         strings: { title: 'My Location' },
         setView: 'untilPanOrZoom'
     }).addTo(map);
 
-    // Add home control below geolocation
     L.control.home = L.Control.extend({
         options: {
             position: 'topright'
@@ -543,4 +563,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     new L.control.home().addTo(map);
+
+    setTimeout(() => {
+        updateLayout();
+        //console.log('Initial map layout applied');
+    }, 100);
 });
