@@ -26,7 +26,7 @@
 }
 
 @keyframes scroll-left {
-    0% { transform: translateX(0); }
+    0% { transform: toX(0); }
     100% { transform: translateX(-100%); }
 }
 
@@ -221,13 +221,13 @@
     /* Warning message bar below weather box */
     .warning-message-bar {
         position: fixed;
-        top: 70px; /* Adjusted based on typical weather-box height */
+        top: 80px; /* Adjusted dynamically in JS to account for weather-box height */
         left: 0;
         right: 0;
         font-size: 11px;
         padding: 8px 10px;
         white-space: normal;
-        overflow: hidden; /* Important for horizontal scroll to work on inner list */
+        overflow: hidden;
         background-color: rgba(0, 128, 0, 0.8);
         z-index: 1002;
     }
@@ -240,7 +240,7 @@
     /* Map container positioned below warning message and above forecast */
     #map {
         position: fixed;
-        top: 70px; /* Based on weather-box and warning-message-bar height */
+        top: 130px; /* Adjusted dynamically in JS based on weather-box and warning-message-bar */
         bottom: 175px; /* Based on weather-forecast-box height */
         left: 0;
         right: 0;
@@ -258,29 +258,29 @@
         width: 100%;
         max-width: none;
         border-radius: 0;
-        padding: 10px 0; /* Adjust padding to allow for inner list overflow */
+        padding: 10px 0;
         font-size: 14px;
-        background-color: rgba(255, 255, 255, 1); /* solid background */
+        background-color: rgba(255, 255, 255, 1); /* Solid background */
         box-sizing: border-box;
         z-index: 1003;
         box-shadow: 0 -2px 5px rgba(0,0,0,0.15);
-        overflow-x: auto; /* Enable horizontal scrolling for this container */
+        overflow-x: auto; /* Enable horizontal scrolling */
         -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        touch-action: pan-x; /* Allow horizontal scrolling, block vertical */
     }
 
     .weather-forecast-title {
         font-weight: bold;
-        padding: 0 0px 0px 15px; /* Add padding to title to align with list */
+        padding: 0 0 0 15px;
     }
 
     .weather-forecast-list {
         list-style: none;
-        padding: 0 15px; /* Add horizontal padding to the list itself */
+        padding: 0 15px;
         display: flex;
         flex-wrap: nowrap;
-        white-space: nowrap; /* Prevent items from wrapping */
-        overflow-x: visible; /* Allow content to overflow horizontally within the scrollable box */
-        /* No need for overflow-x: auto here, it's on the parent box */
+        white-space: nowrap;
+        overflow-x: visible;
     }
 
     .weather-forecast-item {
@@ -290,7 +290,7 @@
         display: flex;
         flex-direction: column;
         text-align: center;
-        vertical-align: top; /* Align items at the top if heights vary */
+        vertical-align: top;
     }
 
     .forecast-date {
@@ -312,11 +312,11 @@
     /* Weather selector moved to bottom right corner of the map */
     .weather-selector {
         position: fixed;
-        bottom: 200px; /* Just above forecast box, adjust if forecast box height changes */
-        right: 10px; /* Moved to the right */
-        left: auto; /* Ensure it doesn't try to use 'left' property */
+        bottom: 200px; /* Just above forecast box */
+        right: 10px;
+        left: auto;
         width: auto;
-        max-width: 150px; /* Set a reasonable max-width */
+        max-width: 150px;
         padding: 8px 10px;
         border-radius: 5px;
         font-size: 14px;
@@ -326,7 +326,7 @@
     }
 
     .weather-selector select {
-        width: 100%; /* Ensure the select element takes full width of its container */
+        width: 100%;
     }
 
     /* Leaflet control customizations */
