@@ -168,7 +168,7 @@
     border: 2px solid rgb(163 190 204);
     border-radius: 3px;
     cursor: pointer;
-    background-image: url('img/home.png');
+    background-image: url('/img/home.png'); /* Ensure path is correct */
     background-size: 20px 20px;
     background-repeat: no-repeat;
     background-position: center;
@@ -216,7 +216,7 @@
 
     .warning-message-bar {
         position: fixed;
-        top: 80px;
+        top: 80px; /* Adjusted dynamically in JS to remove space */
         left: 0;
         right: 0;
         font-size: 11px;
@@ -234,7 +234,7 @@
 
     #map {
         position: fixed;
-        top: 130px;
+        top: 120px; /* Adjusted dynamically in JS */
         bottom: 30px;
         left: 0;
         right: 0;
@@ -308,7 +308,7 @@
 
     .weather-selector {
         position: fixed;
-        bottom: 40px;
+        bottom: 40px; /* Adjusted dynamically in JS */
         left: 10px;
         width: auto;
         max-width: 150px;
