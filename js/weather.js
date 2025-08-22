@@ -398,15 +398,18 @@ function updateLayout() {
         const weatherFTitleHeight = weatherFTitle.offsetHeight || 30;
         const weatherFBoxHeight = weatherFBox.offsetHeight || 100;
 
+        // Position warning bar directly below weather box with no gap
         warningBar.style.top = `${weatherBoxHeight}px`;
+        // Map starts below warning bar
         mapContainer.style.top = `${weatherBoxHeight + warningBarHeight}px`;
         
+        // Weather selector and forecast box positioning
         if (weatherFBox.classList.contains('collapsed')) {
             mapContainer.style.bottom = `${weatherFTitleHeight}px`;
-            weatherSelector.style.bottom = `${weatherFTitleHeight}px`;
+            weatherSelector.style.bottom = `${weatherFTitleHeight + 10}px`; // Small offset above forecast title
         } else {
             mapContainer.style.bottom = `${weatherFBoxHeight}px`;
-            weatherSelector.style.bottom = `${weatherFBoxHeight}px`;
+            weatherSelector.style.bottom = `${weatherFBoxHeight + 10}px`; // Small offset above forecast box
         }
 
         const mapHeight = window.innerHeight - (weatherBoxHeight + warningBarHeight + (weatherFBox.classList.contains('collapsed') ? weatherFTitleHeight : weatherFBoxHeight));
@@ -437,7 +440,7 @@ function updateLayout() {
 
 function createWeatherForecast() {
     const weatherFBox = document.createElement('div');
-    weatherFBox.className = 'weather-forecast-box';
+    weatherFBox.className = 'weather-forecast-box collapsed'; // Default to collapsed
     const title = document.createElement('div');
     title.className = 'weather-forecast-title';
     title.textContent = 'Weather Forecast';
@@ -500,12 +503,6 @@ function createWeatherForecast() {
         }
         updateLayout();
     });
-    
-    if (window.innerWidth <= 600) {
-        weatherFBox.classList.add('collapsed');
-    } else {
-        weatherFBox.classList.remove('collapsed');
-    }
     
     updateWeatherForecast();
     document.getElementById('map').appendChild(weatherFBox);
