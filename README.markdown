@@ -38,8 +38,6 @@ A web-based interactive map displaying real-time weather data for Hong Kong, uti
    │   ├── weather.js
    │   ├── leaflet-windbarb.js
    ├── style.css
-   ├── img/
-   │   ├── home.png
    ├── Data/
    │   ├── latest_temperature.geojson
    │   ├── latest_humidity.geojson
