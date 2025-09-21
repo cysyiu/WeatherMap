@@ -1,11 +1,11 @@
 {
-    "value": "1",
+    "value": "0",
     "unit": "mm",
     "obsTimeYear": "2025",
     "obsTimeMonth": "09",
     "obsTimeDay": "21",
-    "obsTimeHour": "18",
-    "obsTimeMinute": "45",
+    "obsTimeHour": "20",
+    "obsTimeMinute": "15",
     "obsTimeSecond": "00",
     "obsTimeTimezone": "UTC+8"
 }
