@@ -334,14 +334,10 @@
         margin-right: 5px !important;
     }
 
-    .leaflet-control-home {
-        margin-top: 4px !important;
-        margin-right: 5px !important;
-    }
-
     .leaflet-tooltip {
         font-size: 12px;
     }
 }
+
 
 
