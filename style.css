@@ -168,7 +168,7 @@
     border: 2px solid rgb(163 190 204);
     border-radius: 3px;
     cursor: pointer;
-    background-image: url('./img/homeIcon.png'); /* Ensure path is correct */
+    background-image: url('./WeatherMap/img/homeIcon.png'); /* Ensure path is correct */
     background-size: 20px 20px;
     background-repeat: no-repeat;
     background-position: center;
@@ -343,4 +343,5 @@
         font-size: 12px;
     }
 }
+
 
