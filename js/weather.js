@@ -1,5 +1,8 @@
 // Map compass points to degrees (clockwise from North = 0°)
 const HONG_KONG_CENTER = [22.3964, 114.1095]; // [lat, lng] for Leaflet
+
+let currentWeatherElement = 'temperature';
+
 const COMPASS_TO_DEGREES = {
     'North': 360, 'Northeast': 45, 'East': 90, 'Southeast': 135,
     'South': 180, 'Southwest': 225, 'West': 270, 'Northwest': 315,
@@ -320,59 +323,145 @@ function createWeatherBox() {
     timeUpdate.className = 'weather-time';
     
     async function updateWeather() {
-        try {
-            const weatherData = await fetchWeatherData();
-            const warningData = await fetchWarningData();
-            
-            const iconValue = weatherData.icon && weatherData.icon[0];
-            if (iconValue) {
-                weatherIcon.src = `https://www.hko.gov.hk/images/HKOWxIconOutline/pic${iconValue}.png`;
-            } else {
-                console.warn('No weather icon value found in weatherData');
-                weatherIcon.src = '';
-            }
-            
-            warningIconsContainer.innerHTML = '';
-            //console.log('Warning data received:', warningData);
-            if (warningData && Object.keys(warningData).length > 0) {
-                Object.entries(warningData).forEach(([key, warning]) => {
-                    const code = warning.code || key;
-                    //console.log(`Processing warning: key=${key}, code=${code}, name=${warning.name}`);
-                    if (WARNING_ICONS[code] && code !== 'CANCEL') {
-                        const warningIcon = document.createElement('img');
-                        warningIcon.src = WARNING_ICONS[code];
-                        warningIcon.className = 'warning-icon';
-                        warningIcon.title = warning.name || code;
-                        warningIcon.onerror = () => {
-                            console.error(`Failed to load warning icon for ${code}: ${WARNING_ICONS[code]}`);
-                        };
-                        warningIconsContainer.appendChild(warningIcon);
-                    } else {
-                        console.warn(`No icon found for code=${code} or code is CANCEL`);
-                    }
-                });
-            } else {
-                //console.log('No warnings in warningData');
-            }
-            
-            if (weatherData.temperature && weatherData.temperature.recordTime) {
-                const date = new Date(weatherData.temperature.recordTime);
-                const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true };
-                timeUpdate.textContent = `Updated: ${date.toLocaleString('en-US', options).replace(',', '')}`;
-            } else {
-                console.warn('No temperature recordTime in weatherData');
-            }
-        } catch (error) {
-            console.error('Failed to update weather box:', error);
-        }
-    }
-    
+		try {
+			const weatherData = await fetchWeatherData();
+			const warningData = await fetchWarningData();
+
+			// Weather icon
+			const iconValue = weatherData.icon && weatherData.icon[0];
+			if (iconValue) {
+				weatherIcon.src = `https://www.hko.gov.hk/images/HKOWxIconOutline/pic${iconValue}.png`;
+			} else {
+				weatherIcon.src = '';
+			}
+
+			// Warning icons
+			warningIconsContainer.innerHTML = '';
+			if (warningData && Object.keys(warningData).length > 0) {
+				Object.entries(warningData).forEach(([key, warning]) => {
+					const code = warning.code || key;
+					if (WARNING_ICONS[code] && code !== 'CANCEL') {
+						const img = document.createElement('img');
+						img.src = WARNING_ICONS[code];
+						img.className = 'warning-icon';
+						img.title = warning.name || code;
+						img.onerror = () => console.error(`Failed to load warning icon: ${code}`);
+						warningIconsContainer.appendChild(img);
+					}
+				});
+			}
+
+			// ── Get timestamp according to current selected element ───────
+			let updateTimeText = 'Updated: —';
+
+			try {
+				let timestampStr = null;
+
+				if (currentWeatherElement === 'rainfall') {
+					// ── Rainfall uses JSON ───────────────────────────────
+					const rainGeojson = await fetchWeatherStations('rainfall');
+					if (rainGeojson.features.length > 0) {
+						const sampleFeature = rainGeojson.features[0];
+						const dataUrl = sampleFeature.properties.Data_url;
+
+						const response = await fetch(dataUrl);
+						if (response.ok) {
+							const jsonData = await response.json();
+
+							const y   = jsonData.obsTimeYear;
+							const m   = jsonData.obsTimeMonth.padStart(2, '0');
+							const d   = jsonData.obsTimeDay.padStart(2, '0');
+							const hh  = jsonData.obsTimeHour.padStart(2, '0');
+							const mm  = jsonData.obsTimeMinute.padStart(2, '0');
+							// const ss = jsonData.obsTimeSecond || '00';
+
+							if (y && m && d && hh && mm) {
+								timestampStr = `${y}-${m}-${d}T${hh}:${mm}:00+08:00`;
+							}
+						}
+					}
+				} 
+				else {
+					// ── Temperature, Humidity, Wind → CSV format ──────────
+					const geojson = await fetchWeatherStations(currentWeatherElement);
+					if (geojson.features.length > 0) {
+						const sampleFeature = geojson.features[0];
+						const dataUrl = sampleFeature.properties.Data_url;
+
+						const response = await fetch(dataUrl);
+						if (response.ok) {
+							const csvText = await response.text();
+							const lines = csvText.split('\n').filter(line => line.trim() !== '');
+							if (lines.length >= 2) {
+								const headers = lines[0].split(',').map(h => h.trim());
+								const data = lines[1].split(',').map(v => v.trim());
+
+								const yearIdx   = headers.indexOf('Date time (Year)');
+								const monthIdx  = headers.indexOf('Date time (Month)');
+								const dayIdx    = headers.indexOf('Date time (Day)');
+								const hourIdx   = headers.indexOf('Date time (Hour)');
+								const minuteIdx = headers.indexOf('Date time (Minute)');
+
+								if (yearIdx !== -1 && monthIdx !== -1 && dayIdx !== -1 &&
+									hourIdx !== -1 && minuteIdx !== -1) {
+									const y  = data[yearIdx];
+									const m  = data[monthIdx].padStart(2, '0');
+									const d  = data[dayIdx].padStart(2, '0');
+									const hh = data[hourIdx].padStart(2, '0');
+									const mm = data[minuteIdx].padStart(2, '0');
+
+									timestampStr = `${y}-${m}-${d}T${hh}:${mm}:00+08:00`;
+								}
+							}
+						}
+					}
+				}
+
+				// ── Format the timestamp if we got one ────────────────────
+				if (timestampStr) {
+					const date = new Date(timestampStr);
+					if (!isNaN(date.getTime())) {
+						const options = { 
+							day: 'numeric', 
+							month: 'short', 
+							hour: '2-digit', 
+							minute: '2-digit', 
+							hour12: true 
+						};
+						updateTimeText = `Updated: ${date.toLocaleString('en-US', options).replace(',', '')}`;
+					}
+				}
+			} catch (err) {
+				console.warn(`Could not get timestamp for ${currentWeatherElement}:`, err);
+
+				// Fallback: try to use rhrread temperature time
+				if (weatherData.temperature && weatherData.temperature.recordTime) {
+					const fallback = new Date(weatherData.temperature.recordTime);
+					const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true };
+					updateTimeText = `Updated: ${fallback.toLocaleString('en-US', options).replace(',', '')}`;
+				}
+			}
+
+			timeUpdate.textContent = updateTimeText;
+
+		} catch (error) {
+			console.error('Failed to update weather box:', error);
+			timeUpdate.textContent = 'Updated: —';
+		}
+	}
+    window.updateWeather = updateWeather;
     updateWeather();
     setInterval(updateWeather, 60000);
+	
+	const warningLabel = document.createElement('div');
+	warningLabel.className = 'warning-label';
+	warningLabel.textContent = 'Warning Signal';
+	
     
     weatherBox.appendChild(title);
     weatherBox.appendChild(weatherIcon);
     weatherBox.appendChild(divider);
+	weatherBox.appendChild(warningLabel);
     weatherBox.appendChild(warningIconsContainer);
     weatherBox.appendChild(timeUpdate);
     document.getElementById('map').appendChild(weatherBox);
@@ -398,18 +487,15 @@ function updateLayout() {
         const weatherFTitleHeight = weatherFTitle.offsetHeight || 30;
         const weatherFBoxHeight = weatherFBox.offsetHeight || 100;
 
-        // Position warning bar directly below weather box with no gap
         warningBar.style.top = `${weatherBoxHeight}px`;
-        // Map starts below warning bar
         mapContainer.style.top = `${weatherBoxHeight + warningBarHeight}px`;
         
-        // Weather selector and forecast box positioning
         if (weatherFBox.classList.contains('collapsed')) {
             mapContainer.style.bottom = `${weatherFTitleHeight}px`;
-            weatherSelector.style.bottom = `${weatherFTitleHeight + 10}px`; // Small offset above forecast title
+            weatherSelector.style.bottom = `${weatherFTitleHeight}px`;
         } else {
             mapContainer.style.bottom = `${weatherFBoxHeight}px`;
-            weatherSelector.style.bottom = `${weatherFBoxHeight + 10}px`; // Small offset above forecast box
+            weatherSelector.style.bottom = `${weatherFBoxHeight}px`;
         }
 
         const mapHeight = window.innerHeight - (weatherBoxHeight + warningBarHeight + (weatherFBox.classList.contains('collapsed') ? weatherFTitleHeight : weatherFBoxHeight));
@@ -440,7 +526,7 @@ function updateLayout() {
 
 function createWeatherForecast() {
     const weatherFBox = document.createElement('div');
-    weatherFBox.className = 'weather-forecast-box collapsed'; // Default to collapsed
+    weatherFBox.className = 'weather-forecast-box';
     const title = document.createElement('div');
     title.className = 'weather-forecast-title';
     title.textContent = 'Weather Forecast';
@@ -504,6 +590,12 @@ function createWeatherForecast() {
         updateLayout();
     });
     
+    if (window.innerWidth <= 600) {
+        weatherFBox.classList.add('collapsed');
+    } else {
+        weatherFBox.classList.remove('collapsed');
+    }
+    
     updateWeatherForecast();
     document.getElementById('map').appendChild(weatherFBox);
 }
@@ -521,9 +613,15 @@ function createWeatherSelector() {
         <option value="rainfall">Rainfall (mm)</option>
         <option value="wind">Wind</option>
     `;
-    select.addEventListener('change', (e) => {
-        const weatherElement = e.target.value;
-        addWeatherStationsLayer(weatherElement);
+	select.addEventListener('change', (e) => {
+        currentWeatherElement = e.target.value;
+        addWeatherStationsLayer(currentWeatherElement)
+            .then(() => {
+                if (window.updateWeather) {
+                    window.updateWeather();  // Refresh timestamp for new element
+                }
+            })
+            .catch(error => console.error('Failed to update layer or weather box:', error));
     });
     selectorDiv.appendChild(title);
     selectorDiv.appendChild(select);
