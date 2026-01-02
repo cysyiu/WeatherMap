@@ -78,6 +78,12 @@
     margin: 5px 0;
 }
 
+.warning-label {
+    font-weight: bold;
+    font-size: 13px;
+    margin: 5px 0 2px;  /* small margin to separate from divider/icons */
+}
+
 .weather-time {
     font-size: 12px;
 }
@@ -86,11 +92,12 @@
 .weather-forecast-box {
     position: absolute;
     bottom: 20px;
-    right: 10px;
+    right: 5px;
     background-color: rgba(255, 255, 255, 0.9);
     padding: 10px;
     border-radius: 5px;
     z-index: 1000;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
 }
 
 .weather-forecast-box.collapsed .weather-forecast-list {
@@ -99,8 +106,9 @@
 
 .weather-forecast-title {
     font-weight: bold;
-    padding-bottom: 5px;
     cursor: pointer;
+    width: 180px;
+    text-align: center;
 }
 
 .weather-forecast-list {
@@ -168,7 +176,7 @@
     border: 2px solid rgb(163 190 204);
     border-radius: 3px;
     cursor: pointer;
-    background-image: url('./img/homeIcon.png'); /* Ensure path is correct */
+    background-image: url('img/home.png');
     background-size: 20px 20px;
     background-repeat: no-repeat;
     background-position: center;
@@ -195,28 +203,60 @@
         left: 0;
         right: 0;
         width: 100%;
-        max-width: none;
-        padding: 8px 10px;
+        height: 74px;
+        padding: 6px 10px;
         display: flex;
-        align-items: center;
+        flex-direction: row;
         justify-content: space-between;
+        align-items: flex-start;
         box-sizing: border-box;
-        font-size: 14px;
+        background-color: rgba(255, 255, 255, 0.97);
         z-index: 1003;
         border-radius: 0;
-        background-color: rgba(255, 255, 255, 0.95);
-        overflow: visible;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        font-size: 13px;
+        overflow: hidden;
+    }
+
+	.weather-title {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        font-size: 10px;
+        font-weight: bold;
+        color: #333;
+        z-index: 2;
+        line-height: 1;
+        white-space: nowrap;
     }
 
     .weather-icon {
-        width: 60px;
-        height: 60px;
-        margin: -8px 5px;
+        width: 54px;
+        height: 54px;
+		left: 10px;
+        margin: 12px 12px 0 12px;
+        flex-shrink: 0;
+        position: relative;
     }
 
+	.warning-label {
+        position: absolute;
+        top: 0px;                               /* same top as title for consistency */
+        left: 40%;
+        font-size: 10px;                        /* same size */
+        font-weight: bold;                      /* same weight */
+        color: #333;                            /* same color (changed from red) */
+        background: rgba(255,255,255,0.8);      /* same background */
+        padding: 1px 5px;                       /* same padding */
+        border-radius: 3px;                     /* same radius */
+        z-index: 2;
+        white-space: nowrap;
+        line-height: 1;
+    }
+	
     .warning-message-bar {
         position: fixed;
-        top: 80px; /* Adjusted dynamically in JS to remove space */
+        top: 80px;
         left: 0;
         right: 0;
         font-size: 11px;
@@ -231,10 +271,53 @@
         padding-left: 0;
         animation: none;
     }
+	
+	.weather-divider {
+        display: none;
+    }
 
+
+	.weather-time {
+        position: absolute;
+        bottom: 6px;
+        right: 10px;
+        font-size: 10px;
+        line-height: 1.15;
+        text-align: right;
+        color: #444;
+    }
+	
+	.weather-time::before {
+        font-weight: bold;
+        margin-right: 4px;
+    }
+	
+	.warning-icons {
+        position: absolute;
+        top: 25px;                           /* unchanged */
+        left: 45%;
+        display: flex;
+        gap: 6px;
+        margin: 0;
+        max-width: 70%;
+        justify-content: center;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+	
+	.warning-icon {
+        width: 28px;
+        height: 28px;
+    }
+	
+    /* Optional: make layout more compact by reducing gaps between elements */
+    .weather-box > *:not(.weather-title) {
+        margin-left: 8px;
+    }
+	
     #map {
         position: fixed;
-        top: 120px; /* Adjusted dynamically in JS */
+        top: 130px;
         bottom: 30px;
         left: 0;
         right: 0;
@@ -307,8 +390,8 @@
     }
 
     .weather-selector {
-        position: fixed;
-        bottom: 40px; /* Adjusted dynamically in JS */
+        position: relative;
+        top: 10px;
         left: 10px;
         width: auto;
         max-width: 150px;
@@ -316,7 +399,7 @@
         border-radius: 5px;
         font-size: 14px;
         background-color: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 0 8px rgba(0,0,0,0.2);
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
         z-index: 1004;
     }
 
@@ -334,11 +417,12 @@
         margin-right: 5px !important;
     }
 
+    .leaflet-control-home {
+        margin-top: 4px !important;
+        margin-right: 5px !important;
+    }
+
     .leaflet-tooltip {
         font-size: 12px;
     }
 }
-
-
-
-
