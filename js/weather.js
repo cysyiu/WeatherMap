@@ -85,7 +85,7 @@ async function fetchWeatherStations(weatherElement) {
         if (!geoResponse.ok) throw new Error(`GeoJSON fetch failed: ${geoResponse.status}`);
         const geojson = await geoResponse.json();
 
-        const dataResponse = await fetch(`http://35.212.228.195/weather/${weatherElement}.json`);
+        const dataResponse = await fetch(`http://axis-mart-allocated-bios.trycloudflare.com/weather/${weatherElement}.json`);
         if (!dataResponse.ok) throw new Error(`Data fetch failed: ${dataResponse.status}`);
         const allData = await dataResponse.json();
 
@@ -486,7 +486,7 @@ function createWeatherBox() {
             let updateTimeText = 'Updated: —';
 
 			try {
-				const resp = await fetch(`http://35.212.228.195/weather/${currentWeatherElement}.json`);
+				const resp = await fetch(`http://axis-mart-allocated-bios.trycloudflare.com/weather/${currentWeatherElement}.json`);
 				if (resp.ok) {
 					const jsonData = await resp.json();
 					let latestTime = new Date(0);
@@ -740,3 +740,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         //console.log('Initial map layout applied');
     }, 100);
 });
+
