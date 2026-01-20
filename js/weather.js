@@ -85,7 +85,7 @@ async function fetchWeatherStations(weatherElement) {
         if (!geoResponse.ok) throw new Error(`GeoJSON fetch failed: ${geoResponse.status}`);
         const geojson = await geoResponse.json();
 
-        const dataResponse = await fetch(`http://axis-mart-allocated-bios.trycloudflare.com/weather/${weatherElement}.json`);
+        const dataResponse = await fetch(`https://axis-mart-allocated-bios.trycloudflare.com/weather/${weatherElement}.json`);
         if (!dataResponse.ok) throw new Error(`Data fetch failed: ${dataResponse.status}`);
         const allData = await dataResponse.json();
 
@@ -740,4 +740,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         //console.log('Initial map layout applied');
     }, 100);
 });
+
 
