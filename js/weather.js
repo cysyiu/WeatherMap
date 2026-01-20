@@ -486,7 +486,7 @@ function createWeatherBox() {
             let updateTimeText = 'Updated: —';
 
 			try {
-				const resp = await fetch(`http://axis-mart-allocated-bios.trycloudflare.com/weather/${currentWeatherElement}.json`);
+				const resp = await fetch(`https://axis-mart-allocated-bios.trycloudflare.com/weather/${currentWeatherElement}.json`);
 				if (resp.ok) {
 					const jsonData = await resp.json();
 					let latestTime = new Date(0);
@@ -740,5 +740,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         //console.log('Initial map layout applied');
     }, 100);
 });
+
 
 
