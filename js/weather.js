@@ -156,10 +156,10 @@ const map = L.map('map', {
 map.zoomControl.setPosition('topright');
 L.tileLayer('https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/basemap/wgs84/{z}/{x}/{y}.png', {
     attribution: '© Hong Kong Observatory',
-    maxZoom: 18
+    minZoom: 10
 }).addTo(map);
 L.tileLayer('https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz/label/hk/en/wgs84/{z}/{x}/{y}.png', {
-    maxZoom: 18
+    minZoom: 10
 }).addTo(map);
 
 let stationLayer;
@@ -792,6 +792,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         //console.log('Initial map layout applied');
     }, 100);
 });
+
 
 
 
