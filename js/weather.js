@@ -80,63 +80,72 @@ async function fetchWeatherStations(weatherElement) {
         else if (weatherElement === 'wind') geojsonFile = 'Data/latest_wind.geojson';
         else if (weatherElement === 'rainfall') geojsonFile = 'Data/latest_rainfall.geojson';
         else geojsonFile = 'Data/latest_temperature.geojson';
-        const response = await fetch(geojsonFile);
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        const geojson = await response.json();
-        const features = await Promise.all(geojson.features.map(async (feature) => {
-            const dataUrl = feature.properties.Data_url;
-            try {
-                const dataResponse = await fetch(dataUrl);
-                if (!dataResponse.ok) throw new Error(`HTTP error! Status: ${dataResponse.status}`);
-                if (weatherElement === 'rainfall') {
-                    const jsonData = await dataResponse.json();
-                    feature.properties.value = parseFloat(jsonData.value);
-                } else {
-                    const csvText = await dataResponse.text();
-                    const lines = csvText.split('\n').filter(line => line.trim() !== '');
-                    const headers = lines[0].split(',').map(header => header.trim());
-                    if (weatherElement === 'wind') {
-                        const dirIndex = headers.indexOf('10-Minute Mean Wind Direction(Compass points)');
-                        const speedIndex = headers.indexOf('10-Minute Mean Speed(km/hour)');
-                        if (dirIndex === -1 || speedIndex === -1) {
-                            throw new Error('Wind direction or speed columns not found in CSV');
-                        }
-                        const data = lines[1].split(',').map(value => value.trim());
-                        feature.properties.direction = data[dirIndex];
-                        feature.properties.speed_kmh = parseFloat(data[speedIndex]);
-                        feature.properties.speed_knots = isNaN(feature.properties.speed_kmh) ? null : feature.properties.speed_kmh / 1.852;
-                        //console.log(`Station ${feature.properties.AutomaticWeatherStation_en}: direction=${feature.properties.direction}, speed_knots=${feature.properties.speed_knots}`);
-                    } else {
-                        let valueIndex;
-                        if (weatherElement === 'humidity') valueIndex = headers.indexOf('Relative Humidity(percent)');
-                        else valueIndex = headers.indexOf('Air Temperature(degree Celsius)');
-                        if (valueIndex === -1) throw new Error(`${weatherElement === 'humidity' ? 'Relative Humidity(%)' : 'Air Temperature(degree Celsius)'} column not found in CSV`);
-                        const data = lines[1].split(',').map(value => value.trim());
-                        feature.properties.value = parseFloat(data[valueIndex]);
-                    }
-                }
-                return feature;
-            } catch (error) {
-                console.error(`Failed to fetch data for ${feature.properties.AutomaticWeatherStation_en}:`, error);
-                if (weatherElement === 'wind') {
-                    feature.properties.direction = null;
-                    feature.properties.speed_kmh = null;
-                    feature.properties.speed_knots = null;
-                } else {
-                    feature.properties.value = null;
-                }
-                return feature;
+
+        const geoResponse = await fetch(geojsonFile);
+        if (!geoResponse.ok) throw new Error(`GeoJSON fetch failed: ${geoResponse.status}`);
+        const geojson = await geoResponse.json();
+
+        const dataResponse = await fetch(`https://weatherdata.cysyiu.com/weather/${weatherElement}.json`);
+        if (!dataResponse.ok) throw new Error(`Data fetch failed: ${dataResponse.status}`);
+        const allData = await dataResponse.json();
+
+        const features = geojson.features.map(feature => {
+            // Determine station key based on element (matching logic you provided)
+            let stationKey;
+            if (weatherElement === 'rainfall') {
+                stationKey = feature.properties.automaticWeatherStationID;
+            } else {
+                stationKey = feature.properties.AutomaticWeatherStation_en;
             }
-        }));
-        geojson.features = features.filter(feature => 
-            weatherElement === 'wind' ? 
-            (feature.properties.direction !== null) : 
-            feature.properties.value !== null && !isNaN(feature.properties.value)
-        );
-        //console.log(`Filtered ${weatherElement} features:`, geojson.features.length, geojson.features);
+
+            if (!stationKey) return null;
+
+            const stationData = allData.filter(d => d.station === stationKey);
+            if (stationData.length === 0) return null;
+
+            // Sort by observation time (ascending for chart)
+            stationData.sort((a, b) => new Date(a.observation_time_hk) - new Date(b.observation_time_hk));
+
+            const latest = stationData[stationData.length - 1]; // Latest = last after ascending sort
+
+            // Extract values according to actual JSON structure
+            if (weatherElement === 'wind') {
+                feature.properties.direction = latest.wind_dir || null;
+                feature.properties.speed_kmh = parseFloat(latest.wind_speed_kmh) || null;
+                feature.properties.speed_knots = 
+                    (feature.properties.speed_kmh !== null && !isNaN(feature.properties.speed_kmh))
+                    ? feature.properties.speed_kmh / 1.852
+                    : null;
+            } else {
+                let rawValue;
+                if (weatherElement === 'temperature')      rawValue = latest.temperature;
+                else if (weatherElement === 'humidity')    rawValue = latest.rel_humidity_pct;
+                else if (weatherElement === 'rainfall')    rawValue = latest.rainfall_mm;
+
+                feature.properties.value = parseFloat(rawValue);
+                if (isNaN(feature.properties.value)) feature.properties.value = null;
+            }
+
+            feature.properties.allData = stationData; // Keep full sorted history for chart
+            return feature;
+        }).filter(f => f !== null);
+
+        // Improved filtering - keep stations with valid latest data
+        geojson.features = features.filter(feature => {
+            if (weatherElement === 'wind') {
+                return feature.properties.direction !== null && 
+                       feature.properties.speed_knots !== null && 
+                       !isNaN(feature.properties.speed_knots);
+            } else {
+                return feature.properties.value !== null && !isNaN(feature.properties.value);
+            }
+        });
+
+        console.log(`Loaded ${geojson.features.length} valid ${weatherElement} stations`);
         return geojson;
+
     } catch (error) {
-        console.error(`Failed to fetch ${weatherElement} stations:`, error);
+        console.error(`Failed to load ${weatherElement} data:`, error);
         return { type: 'FeatureCollection', features: [] };
     }
 }
@@ -252,32 +261,193 @@ async function addWeatherStationsLayer(weatherElement) {
             }
         },
         onEachFeature: (feature, layer) => {
-            if (feature.properties && feature.properties.AutomaticWeatherStation_en) {
-                const stationName = feature.properties.AutomaticWeatherStation_en;
-                layer.bindPopup(() => {
-                    if (weatherElement === 'wind') {
-                        const direction = feature.properties.direction;
-                        const speed_kmh = feature.properties.speed_kmh;
-                        if (direction === 'Variable') return `${stationName}: Variable direction, ${speed_kmh.toFixed(1)} km/h`;
-                        if (direction === 'Calm') return `${stationName}: Calm`;
-                        if (speed_kmh === null || isNaN(speed_kmh)) return `${stationName}: Missing speed`;
-                        return `${stationName}: ${direction}, ${speed_kmh.toFixed(1)} km/h`;
-                    } else {
-                        const value = feature.properties.value;
-                        return `${stationName}: ${weatherElement === 'humidity' ? `${value}%` : weatherElement === 'rainfall' ? `${value} mm` : `${value}°C`}`;
-                    }
-                });
-                layer.on('mouseover', () => {
-                    layer.bindTooltip(stationName, {
-                        offset: [0, -20],
-                        direction: 'top'
-                    }).openTooltip();
-                });
-                layer.on('mouseout', () => {
-                    layer.closeTooltip();
-                });
-            }
-        }
+			if (feature.properties && feature.properties.AutomaticWeatherStation_en) {
+				const stationName = feature.properties.AutomaticWeatherStation_en;
+
+				layer.bindPopup('', { minWidth: 420 });
+
+				layer.on('popupopen', (e) => {
+					const popupContent = e.popup._contentNode;
+					popupContent.innerHTML = '<div id="chart-container" style="width:100%; height:340px;"></div>';
+
+					const allDataSorted = feature.properties.allData; // already sorted ascending
+
+					// Convert observation_time_hk to milliseconds (Highcharts needs this)
+					const times = allDataSorted.map(d => {
+						if (!d.observation_time_hk) return null;
+						
+						// Take the string up to seconds (remove .000 if present)
+						let clean = d.observation_time_hk.replace(/\.\d{3}$/, '');
+						
+						// If it doesn't already have offset or Z → append +08:00 explicitly
+						if (!clean.includes('Z') && !clean.match(/[+-]\d{2}:\d{2}$/)) {
+							clean += '+08:00';
+						}
+						
+						const date = new Date(clean);
+						return isNaN(date.getTime()) ? null : date.getTime();
+					});
+
+					let series = [];
+					let yAxisTitle = '';
+
+					if (currentWeatherElement === 'wind') {
+						const speeds = allDataSorted.map(d => parseFloat(d.wind_speed_kmh) || null);
+						const gusts  = allDataSorted.map(d => parseFloat(d.gust_kmh)  || null);   // ← adjust key name if different
+						const direction = allDataSorted.map(d => parseFloat(d.wind_dir)  || null);
+						
+						series = [							
+							{
+								name: 'Gust (km/h)',
+								data: times.map((t, i) => {
+									if (t === null || gusts[i] === null) return null;
+									return { x: t, y: gusts[i] };
+								}).filter(Boolean),
+								color: '#e53935',           // red/orange for gusts
+								dashStyle: 'ShortDot',      // dashed line to distinguish
+								marker: { enabled: true, radius: 3 }, // usually no markers on gust line
+								lineWidth: 2
+							},
+							{
+								name: 'Mean Wind Speed (km/h)',
+								data: times.map((t, i) => {
+									if (t === null || speeds[i] === null) return null;
+									return { x: t, y: speeds[i], wind_dir: allDataSorted[i]?.wind_dir || 'N/A' };
+								}).filter(Boolean),
+								color: '#1e88e5',
+								marker: { enabled: true, radius: 4 }
+							}
+						];
+
+						yAxisTitle = 'Wind Speed (km/h)';
+						
+					
+					} else {
+						let valueField, unit, name, color;
+
+						switch (currentWeatherElement) {
+							case 'temperature':
+								valueField = 'temperature';
+								unit = '°C';
+								name = 'Temperature';
+								color = '#ff7043';
+								break;
+							case 'humidity':
+								valueField = 'rel_humidity_pct';
+								unit = '%';
+								name = 'Relative Humidity';
+								color = '#42a5f5';
+								break;
+							case 'rainfall':
+								valueField = 'rainfall_mm';
+								unit = 'mm';
+								name = 'Rainfall';
+								color = '#26a69a';
+								break;
+						}
+
+						const values = allDataSorted.map(d => {
+							const val = parseFloat(d[valueField]);
+							return isNaN(val) ? null : val;
+						});
+
+						series = [{
+							name: `${name} (${unit})`,
+							data: times.map((t, i) => t !== null ? [t, values[i]] : null).filter(Boolean),
+							color: color,
+							marker: { enabled: true, radius: 4 }
+						}];
+
+						yAxisTitle = `${name} (${unit})`;
+					}
+
+					Highcharts.chart('chart-container', {
+						chart: {
+							type: 'line',
+							zoomType: 'x',
+							panning: true,
+							panKey: 'shift',
+							spacingBottom: 15
+						},
+						title: {
+							text: `${stationName} – Last 12 Hours`
+						},
+						xAxis: {
+							type: 'datetime',
+							title: { text: 'Time (HKT)' },
+							crosshair: true,
+							labels: {
+								formatter: function () {
+									return new Date(this.value).toLocaleTimeString('en-US', {
+										timeZone: 'Asia/Hong_Kong',
+										hour: '2-digit',
+										minute: '2-digit',
+										hour12: false
+									});
+								}
+							},
+							dateTimeLabelFormats: {
+								hour: '%H:%M',
+								day: '%e %b %H:%M',
+								week: '%e %b',
+								month: '%b \'%y',
+								year: '%Y'
+							}
+						},
+						yAxis: {
+							title: { text: yAxisTitle },
+							min: currentWeatherElement === 'humidity' ? 0 : undefined,
+							max: currentWeatherElement === 'humidity' ? 100 : undefined,
+							gridLineDashStyle: 'dash'
+						},
+						tooltip: {
+							shared: true,
+							crosshairs: true,
+							xDateFormat: null,  // we handle formatting ourselves
+
+							formatter: function () {
+								// Format time in HKT nicely
+								const hkTime = new Date(this.x).toLocaleString('en-US', {
+									timeZone: 'Asia/Hong_Kong',
+									year: 'numeric',
+									month: '2-digit',
+									day: '2-digit',
+									hour: '2-digit',
+									minute: '2-digit',
+									hour12: false
+								}).replace(/(\d+)\/(\d+)\/(\d+),/, '$3-$1-$2 ').replace(',', '');
+
+								let text = `<b>${hkTime}</b>`;
+
+								this.points.forEach(p => {
+									text += `<br/><span style="color:${p.color}">●</span> ${p.series.name}: <b>${p.y ?? '—'}</b>`;
+								});
+
+								// Show direction from the mean speed point (assuming it's always present)
+								const meanPoint = this.points.find(p => p.series.name.includes('Mean Wind Speed'));
+								if (meanPoint && meanPoint.point.wind_dir) {
+									text += `<br/><span style="color:#666">Direction:</span> <b>${meanPoint.point.wind_dir}</b>`;
+								}
+
+								return text;
+							}
+						},
+						series: series,
+						credits: { enabled: false },
+						legend: { enabled: false },
+						exporting: { enabled: false }
+					});
+				});
+
+				layer.on('mouseover', () => {
+					layer.bindTooltip(stationName, { offset: [0, -25], direction: 'top' }).openTooltip();
+				});
+
+				layer.on('mouseout', () => {
+					layer.closeTooltip();
+				});
+			}
+		}
     }).addTo(map);
 }
 
@@ -310,160 +480,118 @@ function createWarningMessageBar() {
 function createWeatherBox() {
     const weatherBox = document.createElement('div');
     weatherBox.className = 'weather-box';
+
     const title = document.createElement('div');
     title.className = 'weather-title';
     title.textContent = 'Current Weather';
+
     const weatherIcon = document.createElement('img');
     weatherIcon.className = 'weather-icon';
+
     const divider = document.createElement('hr');
     divider.className = 'weather-divider';
+
+    // Create warning label (we'll control its visibility)
+    const warningLabel = document.createElement('div');
+    warningLabel.className = 'warning-label';
+    warningLabel.textContent = 'Warning Signal';
+
     const warningIconsContainer = document.createElement('div');
     warningIconsContainer.className = 'warning-icons';
+
     const timeUpdate = document.createElement('div');
     timeUpdate.className = 'weather-time';
-    
+
     async function updateWeather() {
-		try {
-			const weatherData = await fetchWeatherData();
-			const warningData = await fetchWarningData();
+        try {
+            const weatherData = await fetchWeatherData();
+            const warningData = await fetchWarningData();
 
-			// Weather icon
-			const iconValue = weatherData.icon && weatherData.icon[0];
-			if (iconValue) {
-				weatherIcon.src = `https://www.hko.gov.hk/images/HKOWxIconOutline/pic${iconValue}.png`;
-			} else {
-				weatherIcon.src = '';
-			}
+            // Weather icon
+            const iconValue = weatherData.icon && weatherData.icon[0];
+            weatherIcon.src = iconValue 
+                ? `https://www.hko.gov.hk/images/HKOWxIconOutline/pic${iconValue}.png`
+                : '';
 
-			// Warning icons
-			warningIconsContainer.innerHTML = '';
-			if (warningData && Object.keys(warningData).length > 0) {
-				Object.entries(warningData).forEach(([key, warning]) => {
-					const code = warning.code || key;
-					if (WARNING_ICONS[code] && code !== 'CANCEL') {
-						const img = document.createElement('img');
-						img.src = WARNING_ICONS[code];
-						img.className = 'warning-icon';
-						img.title = warning.name || code;
-						img.onerror = () => console.error(`Failed to load warning icon: ${code}`);
-						warningIconsContainer.appendChild(img);
-					}
-				});
-			}
+            // Warning icons & label visibility
+            warningIconsContainer.innerHTML = '';
 
-			// ── Get timestamp according to current selected element ───────
-			let updateTimeText = 'Updated: —';
+            const hasWarnings = warningData && Object.keys(warningData).length > 0;
+
+            // Only show label if there are active warnings
+            warningLabel.style.display = hasWarnings ? 'block' : 'none';
+
+            if (hasWarnings) {
+                Object.entries(warningData).forEach(([key, warning]) => {
+                    const code = warning.code || key;
+                    if (WARNING_ICONS[code] && code !== 'CANCEL') {
+                        const img = document.createElement('img');
+                        img.src = WARNING_ICONS[code];
+                        img.className = 'warning-icon';
+                        img.title = warning.name || code;
+                        img.onerror = () => console.error(`Failed to load warning icon: ${code}`);
+                        warningIconsContainer.appendChild(img);
+                    }
+                });
+            }
+
+            // Timestamp logic remains the same...
+            let updateTimeText = 'Updated: —';
 
 			try {
-				let timestampStr = null;
-
-				if (currentWeatherElement === 'rainfall') {
-					// ── Rainfall uses JSON ───────────────────────────────
-					const rainGeojson = await fetchWeatherStations('rainfall');
-					if (rainGeojson.features.length > 0) {
-						const sampleFeature = rainGeojson.features[0];
-						const dataUrl = sampleFeature.properties.Data_url;
-
-						const response = await fetch(dataUrl);
-						if (response.ok) {
-							const jsonData = await response.json();
-
-							const y   = jsonData.obsTimeYear;
-							const m   = jsonData.obsTimeMonth.padStart(2, '0');
-							const d   = jsonData.obsTimeDay.padStart(2, '0');
-							const hh  = jsonData.obsTimeHour.padStart(2, '0');
-							const mm  = jsonData.obsTimeMinute.padStart(2, '0');
-							// const ss = jsonData.obsTimeSecond || '00';
-
-							if (y && m && d && hh && mm) {
-								timestampStr = `${y}-${m}-${d}T${hh}:${mm}:00+08:00`;
-							}
+				const resp = await fetch(`https://weatherdata.cysyiu.com/weather/${currentWeatherElement}.json`);
+				if (resp.ok) {
+					const jsonData = await resp.json();
+					let latestTime = new Date(0);
+					jsonData.forEach(d => {
+						const t = new Date(d.observation_time_hk);
+						if (!isNaN(t.getTime()) && t > latestTime) {
+							latestTime = t;
 						}
-					}
-				} 
-				else {
-					// ── Temperature, Humidity, Wind → CSV format ──────────
-					const geojson = await fetchWeatherStations(currentWeatherElement);
-					if (geojson.features.length > 0) {
-						const sampleFeature = geojson.features[0];
-						const dataUrl = sampleFeature.properties.Data_url;
-
-						const response = await fetch(dataUrl);
-						if (response.ok) {
-							const csvText = await response.text();
-							const lines = csvText.split('\n').filter(line => line.trim() !== '');
-							if (lines.length >= 2) {
-								const headers = lines[0].split(',').map(h => h.trim());
-								const data = lines[1].split(',').map(v => v.trim());
-
-								const yearIdx   = headers.indexOf('Date time (Year)');
-								const monthIdx  = headers.indexOf('Date time (Month)');
-								const dayIdx    = headers.indexOf('Date time (Day)');
-								const hourIdx   = headers.indexOf('Date time (Hour)');
-								const minuteIdx = headers.indexOf('Date time (Minute)');
-
-								if (yearIdx !== -1 && monthIdx !== -1 && dayIdx !== -1 &&
-									hourIdx !== -1 && minuteIdx !== -1) {
-									const y  = data[yearIdx];
-									const m  = data[monthIdx].padStart(2, '0');
-									const d  = data[dayIdx].padStart(2, '0');
-									const hh = data[hourIdx].padStart(2, '0');
-									const mm = data[minuteIdx].padStart(2, '0');
-
-									timestampStr = `${y}-${m}-${d}T${hh}:${mm}:00+08:00`;
-								}
-							}
-						}
-					}
-				}
-
-				// ── Format the timestamp if we got one ────────────────────
-				if (timestampStr) {
-					const date = new Date(timestampStr);
-					if (!isNaN(date.getTime())) {
-						const options = { 
-							day: 'numeric', 
-							month: 'short', 
-							hour: '2-digit', 
-							minute: '2-digit', 
-							hour12: true 
-						};
-						updateTimeText = `Updated: ${date.toLocaleString('en-US', options).replace(',', '')}`;
+					});
+					if (jsonData.length > 0) {
+					  const latest = jsonData.reduce((a, b) => 
+						new Date(a.observation_time_hk) > new Date(b.observation_time_hk) ? a : b
+					  );
+					  const display = latest.observation_time_hk
+						.replace("T", " ")
+						.slice(0, 16);
+					  updateTimeText = `Updated: ${display}`;
 					}
 				}
 			} catch (err) {
 				console.warn(`Could not get timestamp for ${currentWeatherElement}:`, err);
-
 				// Fallback: try to use rhrread temperature time
 				if (weatherData.temperature && weatherData.temperature.recordTime) {
 					const fallback = new Date(weatherData.temperature.recordTime);
-					const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true };
-					updateTimeText = `Updated: ${fallback.toLocaleString('en-US', options).replace(',', '')}`;
+					if (!isNaN(fallback.getTime())) {
+						const options = { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true };
+						updateTimeText = `Updated: ${fallback.toLocaleString('en-US', options).replace(',', '')}`;
+					}
 				}
 			}
 
 			timeUpdate.textContent = updateTimeText;
 
-		} catch (error) {
-			console.error('Failed to update weather box:', error);
-			timeUpdate.textContent = 'Updated: —';
-		}
-	}
+        } catch (error) {
+            console.error('Failed to update weather box:', error);
+            timeUpdate.textContent = 'Updated: —';
+            warningLabel.style.display = 'none'; // hide on error too
+        }
+    }
+
     window.updateWeather = updateWeather;
     updateWeather();
     setInterval(updateWeather, 60000);
-	
-	const warningLabel = document.createElement('div');
-	warningLabel.className = 'warning-label';
-	warningLabel.textContent = 'Warning Signal';
-	
-    
+
+    // Append elements
     weatherBox.appendChild(title);
     weatherBox.appendChild(weatherIcon);
     weatherBox.appendChild(divider);
-	weatherBox.appendChild(warningLabel);
+    weatherBox.appendChild(warningLabel);           // ← conditional visibility
     weatherBox.appendChild(warningIconsContainer);
     weatherBox.appendChild(timeUpdate);
+
     document.getElementById('map').appendChild(weatherBox);
 }
 
@@ -531,14 +659,14 @@ function createWeatherForecast() {
     title.className = 'weather-forecast-title';
     title.textContent = 'Weather Forecast';
     
-    weatherFBox.addEventListener('touchstart', (e) => {
-        if (e.target === title) return; // Allow clicks on title, prevent map interaction otherwise
-        e.stopPropagation();
-    }, { passive: false });
-    weatherFBox.addEventListener('touchmove', (e) => {
-        if (e.target === title) return;
-        e.stopPropagation();
-    }, { passive: false });
+    // weatherFBox.addEventListener('touchstart', (e) => {
+        // if (e.target === title) return; // Allow clicks on title, prevent map interaction otherwise
+        // e.stopPropagation();
+    // }, { passive: false });
+    // weatherFBox.addEventListener('touchmove', (e) => {
+        // if (e.target === title) return;
+        // e.stopPropagation();
+    // }, { passive: false });
     
     async function updateWeatherForecast() {
         try {
@@ -664,3 +792,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         //console.log('Initial map layout applied');
     }, 100);
 });
+
+
+
+
+
