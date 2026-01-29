@@ -274,33 +274,54 @@ async function addWeatherStationsLayer(weatherElement) {
 
 					// Convert observation_time_hk to milliseconds (Highcharts needs this)
 					const times = allDataSorted.map(d => {
-						const date = new Date(d.observation_time_hk);
+						if (!d.observation_time_hk) return null;
+						
+						// Take the string up to seconds (remove .000 if present)
+						let clean = d.observation_time_hk.replace(/\.\d{3}$/, '');
+						
+						// If it doesn't already have offset or Z → append +08:00 explicitly
+						if (!clean.includes('Z') && !clean.match(/[+-]\d{2}:\d{2}$/)) {
+							clean += '+08:00';
+						}
+						
+						const date = new Date(clean);
 						return isNaN(date.getTime()) ? null : date.getTime();
 					});
 
 					let series = [];
 					let yAxisTitle = '';
-					let tooltipExtra = null;
 
 					if (currentWeatherElement === 'wind') {
-						const speeds = allDataSorted.map(d => {
-							const val = parseFloat(d.wind_speed_kmh);
-							return isNaN(val) ? null : val;
-						});
-
-						series = [{
-							name: 'Wind Speed (km/h)',
-							data: times.map((t, i) => t !== null ? [t, speeds[i]] : null).filter(Boolean),
-							color: '#1e88e5',
-							marker: { enabled: true, radius: 4 }
-						}];
+						const speeds = allDataSorted.map(d => parseFloat(d.wind_speed_kmh) || null);
+						const gusts  = allDataSorted.map(d => parseFloat(d.gust_kmh)  || null);   // ← adjust key name if different
+						const direction = allDataSorted.map(d => parseFloat(d.wind_dir)  || null);
+						
+						series = [							
+							{
+								name: 'Gust (km/h)',
+								data: times.map((t, i) => {
+									if (t === null || gusts[i] === null) return null;
+									return { x: t, y: gusts[i] };
+								}).filter(Boolean),
+								color: '#e53935',           // red/orange for gusts
+								dashStyle: 'ShortDot',      // dashed line to distinguish
+								marker: { enabled: true, radius: 3 }, // usually no markers on gust line
+								lineWidth: 2
+							},
+							{
+								name: 'Mean Wind Speed (km/h)',
+								data: times.map((t, i) => {
+									if (t === null || speeds[i] === null) return null;
+									return { x: t, y: speeds[i], wind_dir: allDataSorted[i]?.wind_dir || 'N/A' };
+								}).filter(Boolean),
+								color: '#1e88e5',
+								marker: { enabled: true, radius: 4 }
+							}
+						];
 
 						yAxisTitle = 'Wind Speed (km/h)';
-
-						tooltipExtra = function () {
-							const dir = allDataSorted[this.index]?.wind_dir || 'N/A';
-							return `<br/>Direction: <b>${dir}</b>`;
-						};
+						
+					
 					} else {
 						let valueField, unit, name, color;
 
@@ -354,17 +375,24 @@ async function addWeatherStationsLayer(weatherElement) {
 						xAxis: {
 							type: 'datetime',
 							title: { text: 'Time (HKT)' },
+							crosshair: true,
+							labels: {
+								formatter: function () {
+									return new Date(this.value).toLocaleTimeString('en-US', {
+										timeZone: 'Asia/Hong_Kong',
+										hour: '2-digit',
+										minute: '2-digit',
+										hour12: false
+									});
+								}
+							},
 							dateTimeLabelFormats: {
-								millisecond: '%H:%M:%S',
-								second: '%H:%M:%S',
-								minute: '%H:%M',
 								hour: '%H:%M',
 								day: '%e %b %H:%M',
 								week: '%e %b',
 								month: '%b \'%y',
 								year: '%Y'
-							},
-							crosshair: true
+							}
 						},
 						yAxis: {
 							title: { text: yAxisTitle },
@@ -375,9 +403,34 @@ async function addWeatherStationsLayer(weatherElement) {
 						tooltip: {
 							shared: true,
 							crosshairs: true,
-							xDateFormat: '%Y-%m-%d %H:%M', // Clean display: 2026-01-19 14:45
-							pointFormat: '<span style="color:{point.color}">\u25CF</span> <b>{point.y}</b>' +
-										 (tooltipExtra ? tooltipExtra.call(this) : '')
+							xDateFormat: null,  // we handle formatting ourselves
+
+							formatter: function () {
+								// Format time in HKT nicely
+								const hkTime = new Date(this.x).toLocaleString('en-US', {
+									timeZone: 'Asia/Hong_Kong',
+									year: 'numeric',
+									month: '2-digit',
+									day: '2-digit',
+									hour: '2-digit',
+									minute: '2-digit',
+									hour12: false
+								}).replace(/(\d+)\/(\d+)\/(\d+),/, '$3-$1-$2 ').replace(',', '');
+
+								let text = `<b>${hkTime}</b>`;
+
+								this.points.forEach(p => {
+									text += `<br/><span style="color:${p.color}">●</span> ${p.series.name}: <b>${p.y ?? '—'}</b>`;
+								});
+
+								// Show direction from the mean speed point (assuming it's always present)
+								const meanPoint = this.points.find(p => p.series.name.includes('Mean Wind Speed'));
+								if (meanPoint && meanPoint.point.wind_dir) {
+									text += `<br/><span style="color:#666">Direction:</span> <b>${meanPoint.point.wind_dir}</b>`;
+								}
+
+								return text;
+							}
 						},
 						series: series,
 						credits: { enabled: false },
@@ -496,15 +549,14 @@ function createWeatherBox() {
 							latestTime = t;
 						}
 					});
-					if (latestTime > new Date(0)) {
-						const options = { 
-							day: 'numeric', 
-							month: 'short', 
-							hour: '2-digit', 
-							minute: '2-digit', 
-							hour12: true 
-						};
-						updateTimeText = `Updated: ${latestTime.toLocaleString('en-US', options).replace(',', '')}`;
+					if (jsonData.length > 0) {
+					  const latest = jsonData.reduce((a, b) => 
+						new Date(a.observation_time_hk) > new Date(b.observation_time_hk) ? a : b
+					  );
+					  const display = latest.observation_time_hk
+						.replace("T", " ")
+						.slice(0, 16);
+					  updateTimeText = `Updated: ${display}`;
 					}
 				}
 			} catch (err) {
@@ -740,7 +792,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         //console.log('Initial map layout applied');
     }, 100);
 });
-
 
 
 
