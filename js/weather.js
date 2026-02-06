@@ -531,14 +531,14 @@ function createWeatherForecast() {
     title.className = 'weather-forecast-title';
     title.textContent = 'Weather Forecast';
     
-    weatherFBox.addEventListener('touchstart', (e) => {
-        if (e.target === title) return; // Allow clicks on title, prevent map interaction otherwise
-        e.stopPropagation();
-    }, { passive: false });
-    weatherFBox.addEventListener('touchmove', (e) => {
-        if (e.target === title) return;
-        e.stopPropagation();
-    }, { passive: false });
+    //weatherFBox.addEventListener('touchstart', (e) => {
+        //if (e.target === title) return; // Allow clicks on title, prevent map interaction otherwise
+       // e.stopPropagation();
+    //}, { passive: false });
+    //weatherFBox.addEventListener('touchmove', (e) => {
+        //if (e.target === title) return;
+        //e.stopPropagation();
+    //}, { passive: false });
     
     async function updateWeatherForecast() {
         try {
@@ -664,4 +664,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         //console.log('Initial map layout applied');
     }, 100);
 });
+
 
