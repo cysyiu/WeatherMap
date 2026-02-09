@@ -604,7 +604,7 @@ function updateLayout() {
     const weatherFTitle = document.querySelector('.weather-forecast-title');
     const weatherSelector = document.querySelector('.weather-selector');
 
-    if (!weatherBox || !warningBar || !mapContainer || !weatherFBox || !weatherFTitle || !weatherSelector) {
+    if (!weatherBox || !warningBar || !mapContainer || !weatherFBox || !weatherSelector) {
         console.error('One or more elements not found:', { weatherBox, warningBar, mapContainer, weatherFBox, weatherFTitle, weatherSelector });
         return;
     }
@@ -627,7 +627,7 @@ function updateLayout() {
         }
 
         const mapHeight = window.innerHeight - (weatherBoxHeight + warningBarHeight + (weatherFBox.classList.contains('collapsed') ? weatherFTitleHeight : weatherFBoxHeight));
-        //console.log(`Mobile Map Layout: top=${weatherBoxHeight + warningBarHeight}px, bottom=${weatherFBox.classList.contains('collapsed') ? weatherFTitleHeight : weatherFBoxHeight}px, calculated height=${mapHeight}px`);
+        console.log(`Mobile Map Layout: top=${weatherBoxHeight + warningBarHeight}px, bottom=${weatherFBox.classList.contains('collapsed') ? weatherFTitleHeight : weatherFBoxHeight}px, calculated height=${mapHeight}px`);
         if (mapHeight <= 0) {
             console.warn('Map height is non-positive, setting minimum height');
             mapContainer.style.height = '200px';
@@ -812,6 +812,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         //console.log('Initial map layout applied');
     }, 100);
 });
+
 
 
 
