@@ -655,50 +655,62 @@ function updateLayout() {
 function createWeatherForecast() {
     const weatherFBox = document.createElement('div');
     weatherFBox.className = 'weather-forecast-box';
+
     const title = document.createElement('div');
     title.className = 'weather-forecast-title';
     title.textContent = 'Weather Forecast';
-    
-    // weatherFBox.addEventListener('touchstart', (e) => {
-        // if (e.target === title) return; // Allow clicks on title, prevent map interaction otherwise
-        // e.stopPropagation();
-    // }, { passive: false });
-    // weatherFBox.addEventListener('touchmove', (e) => {
-        // if (e.target === title) return;
-        // e.stopPropagation();
-    // }, { passive: false });
-    
+
+    // Toggle collapsed state on click (cleaner than if/else add/remove)
+    title.addEventListener('click', () => {
+        weatherFBox.classList.toggle('collapsed');
+        updateLayout();
+        // Optional: force map to recalculate its size immediately
+        // map.invalidateSize();
+    });
+
     async function updateWeatherForecast() {
         try {
             const weatherFData = await fetchWeatherForecast();
             const forecastList = document.createElement('ul');
             forecastList.className = 'weather-forecast-list';
-            weatherFData.weatherForecast.slice(0, 7).forEach(forecast => {
+
+            weatherFData.weatherForecast?.slice(0, 7).forEach(forecast => {
                 const listItem = document.createElement('li');
                 listItem.className = 'weather-forecast-item';
+
                 const forecastDate = document.createElement('div');
                 forecastDate.className = 'forecast-date';
                 forecastDate.innerHTML = formatForecastDate(forecast.forecastDate);
+
                 const forecastIcon = document.createElement('img');
                 forecastIcon.className = 'forecast-icon';
                 forecastIcon.src = `https://www.hko.gov.hk/images/HKOWxIconOutline/pic${forecast.ForecastIcon}.png`;
+
                 const forecastTemps = document.createElement('div');
                 forecastTemps.className = 'forecast-temps';
                 forecastTemps.innerHTML = `Max: ${forecast.forecastMaxtemp.value}°C<br>Min: ${forecast.forecastMintemp.value}°C`;
+
                 listItem.appendChild(forecastDate);
                 listItem.appendChild(forecastIcon);
                 listItem.appendChild(forecastTemps);
                 forecastList.appendChild(listItem);
             });
+
+            // Clear and rebuild content (keeping title)
             weatherFBox.innerHTML = '';
             weatherFBox.appendChild(title);
             weatherFBox.appendChild(forecastList);
+
             updateLayout();
         } catch (error) {
             console.error('Failed to update forecast:', error);
+            // Optional: show fallback message
+            weatherFBox.innerHTML = '';
+            weatherFBox.appendChild(title);
+            updateLayout();
         }
     }
-    
+
     function formatForecastDate(forecastDate) {
         const year = forecastDate.substring(0, 4);
         const month = forecastDate.substring(4, 6);
@@ -708,23 +720,31 @@ function createWeatherForecast() {
         const dayOfWeek = new Intl.DateTimeFormat('en-US', options).format(date);
         return `${day}/${month}<span style="font-size: 12px;">(${dayOfWeek})</span>`;
     }
-    
-    title.addEventListener('click', () => {
-        if (weatherFBox.classList.contains('collapsed')) {
-            weatherFBox.classList.remove('collapsed');
-        } else {
+
+    // Initialize collapsed state based on screen size & iframe context
+    function initializeForecastState() {
+        const isSmallScreen = window.innerWidth <= 768;
+        const isInIframe = window.self !== window.top;
+
+        if (isSmallScreen || isInIframe) {
             weatherFBox.classList.add('collapsed');
+        } else {
+            weatherFBox.classList.remove('collapsed');
         }
+
         updateLayout();
-    });
-    
-    if (window.innerWidth <= 600) {
-        weatherFBox.classList.add('collapsed');
-    } else {
-        weatherFBox.classList.remove('collapsed');
     }
-    
+
+    // Set initial state
+    initializeForecastState();
+
+    // Re-check on resize (handles orientation change, window resize, etc.)
+    window.addEventListener('resize', initializeForecastState);
+
+    // Start loading forecast data
     updateWeatherForecast();
+
+    // Append to map container
     document.getElementById('map').appendChild(weatherFBox);
 }
 
@@ -792,6 +812,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         //console.log('Initial map layout applied');
     }, 100);
 });
+
 
 
 
