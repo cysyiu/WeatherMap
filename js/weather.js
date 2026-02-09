@@ -604,10 +604,10 @@ function updateLayout() {
     const weatherFTitle = document.querySelector('.weather-forecast-title');
     const weatherSelector = document.querySelector('.weather-selector');
 
-    if (!weatherBox || !warningBar || !mapContainer || !weatherFBox || !weatherSelector) {
-        console.error('One or more elements not found:', { weatherBox, warningBar, mapContainer, weatherFBox, weatherFTitle, weatherSelector });
-        return;
-    }
+    //if (!weatherBox || !warningBar || !mapContainer || !weatherFBox || !weatherSelector) {
+        //console.error('One or more elements not found:', { weatherBox, warningBar, mapContainer, weatherFBox, weatherFTitle, weatherSelector });
+        //return;
+    //}
 
     if (isMobile) {
         const weatherBoxHeight = weatherBox.offsetHeight || 80;
@@ -812,6 +812,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         //console.log('Initial map layout applied');
     }, 100);
 });
+
 
 
 
